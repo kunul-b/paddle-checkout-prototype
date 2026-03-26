@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checkout Prototype</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,500;0,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ─── Page ───────────────────────────────────────────────── */
+body {
+  font-family: 'Lato', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: radial-gradient(ellipse at 60% 30%, #1e1b4b 0%, #0f0e17 50%, #0a0f1e 100%);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 48px 24px 72px;
+}
+
+.scene-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+/* ─── Segmented control ──────────────────────────────────── */
+.seg-control {
+  display: flex;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 4px;
+  gap: 4px;
+  margin-bottom: 28px;
+  width: 300px;
+}
+.seg-btn {
+  flex: 1;
+  padding: 9px 16px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: rgba(255,255,255,0.4);
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+.seg-btn.active {
+  background: rgba(255,255,255,0.14);
+  color: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ─── iPhone 15 Pro frame ────────────────────────────────── */
+.iphone {
+  position: relative;
+  width: 430px;
+  flex-shrink: 0;
+  background: linear-gradient(160deg, #2d2d30 0%, #1c1c1e 45%, #242426 100%);
+  border-radius: 56px;
+  padding: 18px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.14),
+    inset 0 -1px 0 rgba(0,0,0,0.4),
+    inset 1px 0 0 rgba(255,255,255,0.06),
+    inset -1px 0 0 rgba(255,255,255,0.06),
+    0 0 0 1px rgba(0,0,0,0.7),
+    0 0 60px rgba(99, 102, 241, 0.12),
+    0 40px 100px rgba(0,0,0,0.75),
+    0 16px 40px rgba(0,0,0,0.5);
+}
+.btn-silent { position:absolute; left:-4px; top:148px; width:4px; height:32px; background:linear-gradient(to right,#3a3a3c,#48484a); border-radius:3px 0 0 3px; }
+.btn-vol-up { position:absolute; left:-4px; top:204px; width:4px; height:68px; background:linear-gradient(to right,#3a3a3c,#48484a); border-radius:3px 0 0 3px; }
+.btn-vol-down { position:absolute; left:-4px; top:287px; width:4px; height:68px; background:linear-gradient(to right,#3a3a3c,#48484a); border-radius:3px 0 0 3px; }
+.btn-power { position:absolute; right:-4px; top:230px; width:4px; height:90px; background:linear-gradient(to left,#3a3a3c,#48484a); border-radius:0 3px 3px 0; }
+
+/* ─── Screen ─────────────────────────────────────────────── */
+.screen {
+  background: #fff;
+  border-radius: 40px;
+  overflow: hidden;
+  height: 858px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+.status-bar {
+  position: relative;
+  height: 59px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  padding: 0 28px 10px;
+  flex-shrink: 0;
+  background: #fff;
+  z-index: 20;
+}
+.dynamic-island {
+  position: absolute;
+  top: 12px; left: 50%;
+  transform: translateX(-50%);
+  width: 126px; height: 37px;
+  background: #000;
+  border-radius: 20px;
+}
+.status-time {
+  font-family: -apple-system, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+  font-size: 15px; font-weight: 600;
+  color: #000; letter-spacing: -0.3px; line-height: 1;
+}
+.status-icons { display: flex; align-items: center; gap: 6px; }
+.screen-scroll {
+  flex: 1;
+  overflow-y: auto; overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.screen-scroll::-webkit-scrollbar { display: none; }
+.home-bar { height:34px; display:flex; align-items:center; justify-content:center; flex-shrink:0; background:#fff; }
+.home-bar-pill { width:134px; height:5px; background:#000; border-radius:3px; opacity:.18; }
+
+/* ─── Flow switching ─────────────────────────────────────── */
+.flow-panel { display: none; }
+.flow-panel.active { display: block; }
+
+.scene-caption {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: rgba(255,255,255,0.2);
+  margin-top: 28px;
+  letter-spacing: 0.03em;
+}
+
+/* ════════════════════════════════════════════════════════════
+   SHARED CHECKOUT STYLES
+   ════════════════════════════════════════════════════════════ */
+
+.checkout-card {
+  background: #fff;
+  padding: 20px 16px 24px;
+  width: 100%;
+}
+
+/* ─── Collapse animation ─────────────────────────────────── */
+.collapse-wrap {
+  display: grid;
+  grid-template-rows: 1fr;
+  opacity: 1;
+  transition: grid-template-rows 0.32s cubic-bezier(0.4,0,0.2,1), opacity 0.22s ease;
+}
+.collapse-wrap.closed { grid-template-rows: 0fr; opacity: 0; pointer-events: none; }
+.collapse-inner { overflow: hidden; min-height: 0; }
+
+/* ─── Express buttons (default flow) ─────────────────────── */
+.express-row { display: flex; gap: 10px; padding-bottom: 20px; }
+.express-btn {
+  flex: 1;
+  height: 58px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-family: 'Lato', sans-serif;
+  font-size: 14px; font-weight: 500;
+  color: #9ca3af;
+  transition: border-color 0.18s ease, background 0.18s ease, color 0.18s ease, border-radius 0.18s ease;
+}
+.express-btn:hover { border-color: #d1d5db; }
+.express-btn.express-active { background: #f7f8f9; border-color: #d8dbde; border-radius: 8px; color: #5f6364; }
+
+/* Default PayPal icon */
+.paypal-icon { position:relative; width:22px; height:22px; flex-shrink:0; }
+.paypal-icon img { position:absolute; object-fit:fill; }
+/* Default Apple Pay icon */
+.applepay-icon { position:relative; width:26px; height:26px; flex-shrink:0; overflow:hidden; }
+.applepay-icon img { position:absolute; object-fit:fill; }
+
+/* ─── Pre-fill express buttons ───────────────────────────── */
+.pf-express-row { display: flex; gap: 10px; padding-bottom: 20px; }
+/* PayPal branded (white bg, grey border) */
+.pf-paypal-btn {
+  flex: 1; height: 62px;
+  border-radius: 12px;
+  border: 1px solid #d8dbde;
+  background: #fff;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: border-color 0.18s, background 0.18s, border-radius 0.18s;
+}
+.pf-paypal-btn:hover { border-color: #b5b8bb; }
+.pf-paypal-btn.express-active { background: #f7f8f9; border-color: #d8dbde; border-radius: 8px; }
+.pf-paypal-logo { height: 18px; width: auto; }
+/* Apple Pay branded (black bg) */
+.pf-applepay-btn {
+  flex: 1; height: 62px;
+  border-radius: 12px;
+  background: #0e1414;
+  border: 1px solid #1e1e1e;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: opacity 0.18s, border-radius 0.18s;
+}
+.pf-applepay-btn:hover { opacity: 0.88; }
+.pf-applepay-btn.express-active { border-radius: 8px; opacity: 0.85; }
+.pf-applepay-logo { height: 20px; width: 47px; }
+.express-deactive { opacity: 0.3; transition: opacity 0.18s ease; }
+
+/* ─── Divider ─────────────────────────────────────────────── */
+.divider {
+  display: flex; align-items: center; gap: 14px;
+  font-size: 13px; color: #5f6364; padding-bottom: 20px;
+}
+.divider::before,.divider::after { content:''; flex:1; height:1px; background:#d8dbde; }
+
+/* ─── Default payment tile grid ──────────────────────────── */
+.tile-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding-bottom:20px; }
+.payment-tile {
+  background:#fafbfc; border:1px solid #eef0f2; border-radius:10px;
+  height:66px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  cursor:pointer;
+  font-family:'Lato',sans-serif; font-size:11px; font-weight:500; color:#8b8f94;
+  transition:border-color 0.15s, background 0.15s;
+}
+.payment-tile:hover { border-color:#d1d5db; background:#f5f6f7; }
+.payment-tile img { width:20px; height:20px; object-fit:contain; }
+.klarna-icon { position:relative; width:20px; height:20px; overflow:hidden; border-radius:3px; }
+.klarna-icon img { position:absolute; top:16.67%;right:8.33%;bottom:16.67%;left:8.33%; width:calc(100% - 16.66%);height:calc(100% - 33.34%); object-fit:fill; }
+.klarna-k { position:absolute; top:29.17%;right:31.67%;bottom:30.83%;left:33.33%; font-family:'Inter',sans-serif; font-weight:700; font-size:6.667px; color:#5f6364; display:flex; align-items:center; justify-content:center; }
+
+/* ─── Pre-fill payment tile grid ─────────────────────────── */
+.pf-tile-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding-bottom:20px; }
+.pf-tile {
+  height:86px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+  cursor:pointer; border:1px solid #eef0f2;
+  transition:opacity 0.15s, transform 0.15s;
+}
+.pf-tile:hover { opacity: 0.85; transform: scale(0.97); }
+/* Google Pay lockup (two overlapping images) */
+.pf-gpay-lockup { position:relative; width:50px; height:19px; flex-shrink:0; }
+.pf-gpay-lockup img { position:absolute; }
+
+/* ─── Selected tile (default + prefill shared) ───────────── */
+.selected-tile {
+  width:100%; height:70px;
+  background:#fafbfc; border:1px solid #d8dbde; border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  font-family:'Lato',sans-serif; font-size:12px; font-weight:500; color:#8b8f94;
+}
+.selected-tile img { width:20px; height:20px; object-fit:contain; }
+
+/* Pre-fill selected tile (full-width, colored bg, taller) */
+.pf-selected-tile {
+  width:100%; height:86px;
+  border-radius:14px; border: none;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px;
+}
+
+/* ─── Pay another way button ─────────────────────────────── */
+.pay-another-way-btn {
+  width:100%; height:44px;
+  background:#fff; border:1px solid #3267e7; border-radius:12px;
+  color:#3267e7;
+  font-family:'Inter',-apple-system,sans-serif; font-size:14px; font-weight:600;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s;
+}
+.pay-another-way-btn:hover { background:#f0f4ff; }
+
+/* ─── Form ────────────────────────────────────────────────── */
+.form-section { display:flex; flex-direction:column; }
+.field { display:flex; flex-direction:column; gap:4px; margin-bottom:20px; }
+.field:last-child { margin-bottom:0; }
+.field label { font-size:14px; color:#555; }
+
+.input-box {
+  height:44px; border:1px solid #d9d9d9; border-radius:4px; background:#fff;
+  width:100%; padding:0 12px;
+  font-size:14px; color:#262626; font-family:'Lato',sans-serif;
+  outline:none; transition:border-color 0.15s; appearance:none;
+}
+.input-box::placeholder { color:#a5a7a9; }
+.input-box:focus { border-color:#3267e7; }
+
+.card-details-group {
+  border:1px solid #d8dbde; border-radius:10px; overflow:hidden; transition:border-color 0.15s;
+}
+.card-details-group:focus-within { border-color:#3267e7; }
+.card-row-top { display:flex; align-items:center; height:44px; padding:0 12px; border-bottom:1px solid #d8dbde; }
+.card-number-input {
+  flex:1; border:none; outline:none;
+  font-size:14px; color:#262626; font-family:'Lato',sans-serif; background:transparent; min-width:0;
+}
+.card-number-input::placeholder { color:#a5a7a9; }
+.card-brands { display:flex; align-items:center; flex-shrink:0; }
+.card-brand { position:relative; width:28px; height:28px; flex-shrink:0; overflow:hidden; }
+.card-brand img { position:absolute; object-fit:fill; }
+.card-row-bottom { display:flex; }
+.card-half { flex:1; height:44px; display:flex; align-items:center; padding:0 12px; }
+.card-half:first-child { border-right:1px solid #d8dbde; }
+.card-half input { width:100%; border:none; outline:none; font-size:14px; color:#262626; font-family:'Lato',sans-serif; background:transparent; }
+.card-half input::placeholder { color:#a5a7a9; }
+
+.fields-row { display:flex; gap:12px; margin-bottom:20px; }
+.fields-row .field { flex:1; margin-bottom:0; }
+
+.save-card-box {
+  background:#f7f8f9; border-radius:10px; padding:12px;
+  display:flex; gap:10px; align-items:flex-start; margin-bottom:20px;
+  cursor:pointer; user-select:none;
+}
+.checkbox-lg {
+  width:20px; height:20px; min-width:20px;
+  border:1.5px solid #d8dbde; border-radius:4px; background:#fff;
+  margin-top:1px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s, border-color 0.15s;
+}
+.checkbox-lg.checked { background:#3267e7; border-color:#3267e7; }
+.checkbox-lg.checked::after { content:''; display:block; width:5px; height:9px; border:2px solid #fff; border-top:none; border-left:none; transform:rotate(45deg) translate(-1px,-1px); }
+.save-card-text { font-size:13px; color:#5f6364; line-height:20px; }
+.save-card-text strong { font-weight:700; }
+
+.aione-row { display:flex; gap:8px; align-items:center; padding-left:14px; margin-bottom:20px; cursor:pointer; user-select:none; }
+.checkbox-sm {
+  width:16px; height:16px; min-width:16px;
+  border:1.5px solid #d8dbde; border-radius:4px; background:#fff; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s, border-color 0.15s;
+}
+.checkbox-sm.checked { background:#3267e7; border-color:#3267e7; }
+.checkbox-sm.checked::after { content:''; display:block; width:4px; height:7px; border:1.5px solid #fff; border-top:none; border-left:none; transform:rotate(45deg) translate(-1px,-1px); }
+.aione-text { font-size:13px; color:#5f6364; }
+
+.pay-btn {
+  width:100%; height:40px; background:#3267e7; border:none; border-radius:4px;
+  color:#fff; font-family:'Lato',sans-serif; font-size:14px; font-weight:500;
+  cursor:pointer; margin-bottom:14px; transition:background 0.15s;
+}
+.pay-btn:hover { background:#2555cc; }
+
+.price-breakdown { display:flex; align-items:center; justify-content:space-between; font-size:12px; color:#5f6364; margin-bottom:14px; cursor:pointer; }
+
+.footer-text { font-family:'Inter',-apple-system,sans-serif; font-size:10px; color:#5f6364; text-align:center; line-height:1.6; }
+.footer-text a { color:#5f6364; text-decoration:underline; }
+</style>
+</head>
+<body>
+
+<p class="scene-label">Checkout Prototype</p>
+
+<div class="seg-control">
+  <button class="seg-btn active" data-flow="default" onclick="switchFlow('default')">Default flow</button>
+  <button class="seg-btn" data-flow="prefill" onclick="switchFlow('prefill')">Pre-fill flow</button>
+</div>
+
+<div class="iphone">
+  <div class="btn-silent"></div>
+  <div class="btn-vol-up"></div>
+  <div class="btn-vol-down"></div>
+  <div class="btn-power"></div>
+
+  <div class="screen">
+    <div class="status-bar">
+      <div class="dynamic-island"></div>
+      <span class="status-time">9:41</span>
+      <div class="status-icons">
+        <svg width="17" height="12" viewBox="0 0 17 12" fill="none"><rect x="0" y="8" width="3" height="4" rx="1" fill="black"/><rect x="4.5" y="5.5" width="3" height="6.5" rx="1" fill="black"/><rect x="9" y="3" width="3" height="9" rx="1" fill="black"/><rect x="13.5" y="0" width="3" height="12" rx="1" fill="black"/></svg>
+        <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><circle cx="8" cy="11" r="1.5" fill="black"/><path d="M4.8 7.8C5.9 6.6 6.9 6 8 6s2.1.6 3.2 1.8" stroke="black" stroke-width="1.5" stroke-linecap="round"/><path d="M1.8 4.8C3.6 2.8 5.7 1.5 8 1.5s4.4 1.3 6.2 3.3" stroke="black" stroke-width="1.5" stroke-linecap="round"/></svg>
+        <svg width="27" height="13" viewBox="0 0 27 13" fill="none"><rect x="0.5" y="0.5" width="21" height="12" rx="3.5" stroke="black" stroke-opacity="0.35"/><path d="M22.5 4.5v4c1-.4 1.8-1.3 1.8-2s-.8-1.6-1.8-2z" fill="black" fill-opacity="0.4"/><rect x="2" y="2" width="17" height="9" rx="2" fill="black"/></svg>
+      </div>
+    </div>
+
+    <div class="screen-scroll">
+
+      <!-- ══════════════════════════════════════
+           DEFAULT FLOW
+           ══════════════════════════════════════ -->
+      <div class="flow-panel active" id="flow-default">
+        <div class="checkout-card">
+
+          <div class="collapse-wrap" id="d-wrap-express">
+            <div class="collapse-inner">
+              <div class="express-row">
+                <button class="express-btn" id="d-btn-paypal" onclick="D.selectPayPal()">
+                  <div class="paypal-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/a4937913-5d4f-49aa-b4ea-4a49f7d4e232" style="top:13.75%;right:27.92%;bottom:17.52%;left:16.67%;width:calc(100% - 44.59%);height:calc(100% - 31.27%);">
+                    <img src="https://www.figma.com/api/mcp/asset/17b042c7-2f49-4dbc-a694-d613fe4cc7ad" style="top:13.75%;right:33.27%;bottom:24.91%;left:16.67%;width:calc(100% - 49.94%);height:calc(100% - 38.66%);">
+                    <img src="https://www.figma.com/api/mcp/asset/798dbae1-4d7b-4f3a-9a3d-32144c0141d6" style="top:13.75%;right:33.27%;bottom:24.91%;left:16.67%;width:calc(100% - 49.94%);height:calc(100% - 38.66%);">
+                  </div>
+                  PayPal
+                </button>
+                <button class="express-btn" id="d-btn-applepay" onclick="D.selectApplePay()">
+                  <div class="applepay-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/af6bcfb4-7c64-45c7-b597-3ea8ad104a45" style="top:3.5px;left:0;width:26px;height:17px;">
+                    <img src="https://www.figma.com/api/mcp/asset/126f1214-e84f-4512-b7f4-a9ffb5b25888" style="top:4.1px;left:0.5px;width:25px;height:15.8px;">
+                    <img src="https://www.figma.com/api/mcp/asset/0e51b1e5-879d-4e3e-b3d5-9cfa379e1080" style="top:9px;left:3.5px;width:5.3px;height:6.5px;">
+                    <img src="https://www.figma.com/api/mcp/asset/dc3059b6-fd8e-460e-886a-70cd72e1439a" style="top:9.5px;left:9.8px;width:12.7px;height:7.7px;">
+                  </div>
+                  Apple Pay
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="collapse-wrap" id="d-wrap-divider">
+            <div class="collapse-inner">
+              <div class="divider">Or pay another way</div>
+            </div>
+          </div>
+
+          <div class="collapse-wrap" id="d-wrap-tiles">
+            <div class="collapse-inner">
+              <div class="tile-grid">
+                <button class="payment-tile" onclick="D.selectTile('venmo')">
+                  <img src="https://www.figma.com/api/mcp/asset/62961c76-0af2-4389-81e6-f10aca544e0c" alt="">Venmo
+                </button>
+                <button class="payment-tile" onclick="D.selectTile('gpay')">
+                  <img src="https://www.figma.com/api/mcp/asset/1e8bdbc5-d0fb-45b8-a81b-2200037d7385" alt="">Google Pay
+                </button>
+                <button class="payment-tile" onclick="D.selectTile('bank')">
+                  <img src="https://www.figma.com/api/mcp/asset/fa07410b-0d92-49d3-a07e-f811bf9169c4" alt="">Bank
+                </button>
+                <button class="payment-tile" onclick="D.selectTile('klarna')">
+                  <div class="klarna-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/b24b2211-aab8-4b91-bf62-a542a17efefe" alt="">
+                    <span class="klarna-k">K.</span>
+                  </div>Klarna
+                </button>
+                <button class="payment-tile" onclick="D.selectTile('afterpay')">
+                  <img src="https://www.figma.com/api/mcp/asset/274e82e7-60bd-49f0-a31a-9d0a6d0a2171" alt="">Afterpay
+                </button>
+                <button class="payment-tile" onclick="D.selectTile('crypto')">
+                  <img src="https://www.figma.com/api/mcp/asset/e155a2b4-66e3-4b72-b97c-2534dfb3c530" alt="">Crypto
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="collapse-wrap closed" id="d-wrap-tile-selected">
+            <div class="collapse-inner">
+              <div style="padding-bottom:20px;">
+                <div class="selected-tile" id="d-selected-tile">
+                  <img id="d-tile-icon" src="" alt="">
+                  <span id="d-tile-name"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="collapse-wrap closed" id="d-wrap-pay-another-way">
+            <div class="collapse-inner">
+              <div style="padding-bottom:20px;">
+                <button class="pay-another-way-btn" onclick="D.selectDefault()">Pay another way</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <div class="field">
+              <label>Email</label>
+              <input class="input-box" type="email" placeholder="you@example.com" autocomplete="email">
+            </div>
+            <div class="collapse-wrap" id="d-wrap-card-fields">
+              <div class="collapse-inner">
+                <div class="field">
+                  <label>Name on card</label>
+                  <input class="input-box" type="text" placeholder="Full name" autocomplete="cc-name">
+                </div>
+                <div class="field" style="margin-bottom:20px;">
+                  <label>Card details</label>
+                  <div class="card-details-group">
+                    <div class="card-row-top">
+                      <input class="card-number-input" type="text" placeholder="xxxx xxxx xxxx xxxx" autocomplete="cc-number" inputmode="numeric" maxlength="19" oninput="formatCardNumber(this)">
+                      <div class="card-brands">
+                        <div class="card-brand"><img src="https://www.figma.com/api/mcp/asset/4534ff23-ff15-46e5-b5ff-bda9e274d5d7" style="left:3.17px;top:7.25px;width:10.91px;height:13.5px;"><img src="https://www.figma.com/api/mcp/asset/13278c41-5050-439b-853b-c45897162683" style="left:14.08px;top:7.25px;width:10.92px;height:13.52px;"><img src="https://www.figma.com/api/mcp/asset/5ad80a5d-cb26-4558-b933-1c26625b38cc" style="left:11.5px;top:8.69px;width:5.16px;height:10.64px;"></div>
+                        <div class="card-brand"><img src="https://www.figma.com/api/mcp/asset/2bbc1fb7-b858-491c-890d-adc9d16b2dce" style="left:1.98px;top:5px;width:24.02px;height:18.02px;"></div>
+                        <div class="card-brand"><img src="https://www.figma.com/api/mcp/asset/305cbb83-e4ba-4cd2-b50c-789e7cb3fbf2" style="top:0;left:0;width:100%;height:100%;"></div>
+                        <div class="card-brand"><img src="https://www.figma.com/api/mcp/asset/47ab7070-36ef-469b-9ad5-cb5c571b7b99" style="left:4px;top:6px;width:20px;height:16px;"></div>
+                      </div>
+                    </div>
+                    <div class="card-row-bottom">
+                      <div class="card-half"><input type="text" placeholder="MM / YY" autocomplete="cc-exp" inputmode="numeric" maxlength="7" oninput="formatExpiry(this)"></div>
+                      <div class="card-half"><input type="text" placeholder="CVC" autocomplete="cc-csc" inputmode="numeric" maxlength="4"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="fields-row">
+              <div class="field"><label>Country</label><input class="input-box" type="text" value="United States" autocomplete="country-name"></div>
+              <div class="field"><label>Zip</label><input class="input-box" type="text" placeholder="10001" inputmode="numeric"></div>
+            </div>
+            <div class="save-card-box" onclick="toggleCb('d-chk-save')">
+              <div class="checkbox-lg" id="d-chk-save"></div>
+              <div class="save-card-text"><strong>Save my card details for a faster checkout</strong> with Wiser next time</div>
+            </div>
+            <div class="aione-row" onclick="toggleCb('d-chk-aione')">
+              <div class="checkbox-sm" id="d-chk-aione"></div>
+              <span class="aione-text">AIONE may send me updates via email</span>
+            </div>
+            <button class="pay-btn">Pay $1,088.00</button>
+            <div class="price-breakdown"><span>Price breakdown</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="#5f6364" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <p class="footer-text">Sold by Paddle.com Market Limited, UK, Data shared with<br>Sellername for fulfilment.&nbsp;<a href="#">Terms</a>&nbsp;<a href="#">Privacy</a></p>
+          </div>
+
+        </div>
+      </div><!-- /flow-default -->
+
+
+      <!-- ══════════════════════════════════════
+           PRE-FILL FLOW
+           ══════════════════════════════════════ -->
+      <div class="flow-panel" id="flow-prefill">
+        <div class="checkout-card">
+
+          <!-- Express: PayPal (branded) + Apple Pay (black) -->
+          <div class="collapse-wrap" id="p-wrap-express">
+            <div class="collapse-inner">
+              <div class="pf-express-row">
+                <button class="pf-paypal-btn" id="p-btn-paypal" onclick="P.selectPayPal()">
+                  <!-- PayPal horizontal wordmark -->
+                  <img class="pf-paypal-logo" src="https://www.figma.com/api/mcp/asset/50653ab4-d286-4026-90bf-3f1da8258706" alt="PayPal" style="width:75px;height:18px;object-fit:contain;">
+                </button>
+                <button class="pf-applepay-btn" id="p-btn-applepay" onclick="P.selectApplePay()">
+                  <!-- Apple Pay white wordmark on black -->
+                  <img class="pf-applepay-logo" src="https://www.figma.com/api/mcp/asset/81d881ab-c531-4666-8ae6-057773fb927c" alt="Apple Pay" style="width:47px;height:20px;object-fit:contain;">
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="collapse-wrap" id="p-wrap-divider">
+            <div class="collapse-inner">
+              <div class="divider">Or pay another way</div>
+            </div>
+          </div>
+
+          <!-- 6 colorful branded tiles -->
+          <div class="collapse-wrap" id="p-wrap-tiles">
+            <div class="collapse-inner">
+              <div class="pf-tile-grid">
+
+                <!-- Row 1, col 1: Klarna – pink, border-radius 12px, no border -->
+                <button class="pf-tile" style="background:#ffb3c7;border:none;border-radius:12px;" onclick="P.selectTile('klarna')">
+                  <img src="https://www.figma.com/api/mcp/asset/b69d055e-22cd-4e93-ae3b-6405e80a8fb1" alt="Klarna" style="width:57px;height:13px;object-fit:contain;">
+                </button>
+
+                <!-- Row 1, col 2: Google Pay – white, border #d8dbde, border-radius 12px -->
+                <button class="pf-tile" style="background:#fff;border:1px solid #d8dbde;border-radius:12px;" onclick="P.selectTile('gpay')">
+                  <div class="pf-gpay-lockup">
+                    <!-- G mark at (0,0) -->
+                    <img src="https://www.figma.com/api/mcp/asset/341324b3-a27d-4bbf-b63a-4e132c400db4" style="left:0;top:1px;width:16px;height:16px;" alt="">
+                    <!-- "Pay" text at (21.8px, 1px) -->
+                    <img src="https://www.figma.com/api/mcp/asset/8d4bb71f-3a06-48b3-8dbb-21259ba1b62c" style="left:21px;top:0;width:28px;height:18px;" alt="">
+                  </div>
+                </button>
+
+                <!-- Row 1, col 3: Venmo – blue #008cff, border-radius 14px -->
+                <button class="pf-tile" style="background:#008cff;border-radius:14px;" onclick="P.selectTile('venmo')">
+                  <img src="https://www.figma.com/api/mcp/asset/c00df829-c5ae-4dfd-9eec-6d1852b39712" alt="Venmo" style="width:37px;height:37px;object-fit:cover;">
+                </button>
+
+                <!-- Row 2, col 1: Bank – purple #5c5aee, border-radius 14px -->
+                <button class="pf-tile" style="background:#5c5aee;border-radius:14px;" onclick="P.selectTile('bank')">
+                  <div style="background:#fff;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;">
+                    <img src="https://www.figma.com/api/mcp/asset/26700113-e368-4bad-adfb-53978fc4d716" alt="" style="width:20px;height:20px;">
+                  </div>
+                  <span style="color:#fff;font-size:12px;font-weight:500;font-family:'Lato',sans-serif;line-height:18px;">Bank</span>
+                </button>
+
+                <!-- Row 2, col 2: Afterpay – teal #b2fce5, border-radius 14px -->
+                <button class="pf-tile" style="background:#b2fce5;border-radius:14px;" onclick="P.selectTile('afterpay')">
+                  <img src="https://www.figma.com/api/mcp/asset/ddd3171c-1cf6-49e3-944f-913e15126bcf" alt="Afterpay" style="width:92px;height:32px;object-fit:cover;">
+                </button>
+
+                <!-- Row 2, col 3: Crypto – orange #f7931a, border-radius 14px -->
+                <button class="pf-tile" style="background:#f7931a;border-radius:14px;" onclick="P.selectTile('crypto')">
+                  <img src="https://www.figma.com/api/mcp/asset/dd3a8764-0c48-4955-9924-81d568e78e60" alt="Crypto" style="width:48px;height:48px;object-fit:cover;">
+                </button>
+
+              </div>
+            </div>
+          </div>
+
+          <!-- Full-width selected tile (pre-fill branded) -->
+          <div class="collapse-wrap closed" id="p-wrap-tile-selected">
+            <div class="collapse-inner">
+              <div style="padding-bottom:20px;">
+                <div class="pf-selected-tile" id="p-selected-tile"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pay another way -->
+          <div class="collapse-wrap closed" id="p-wrap-pay-another-way">
+            <div class="collapse-inner">
+              <div style="padding-bottom:20px;">
+                <button class="pay-another-way-btn" onclick="P.selectDefault()">Pay another way</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-section">
+            <!-- No email field in pre-fill – it's pre-filled above -->
+            <div class="collapse-wrap" id="p-wrap-card-fields">
+              <div class="collapse-inner">
+                <div class="field">
+                  <label>Name on card</label>
+                  <input class="input-box" type="text" placeholder="Full name" autocomplete="cc-name">
+                </div>
+                <div class="field" style="margin-bottom:20px;">
+                  <label>Card details</label>
+                  <div class="card-details-group">
+                    <div class="card-row-top">
+                      <input class="card-number-input" type="text" placeholder="xxxx xxxx xxxx xxxx" autocomplete="cc-number" inputmode="numeric" maxlength="19" oninput="formatCardNumber(this)">
+                      <div class="card-brands">
+                        <div class="card-brand"><img src="https://www.figma.com/api/mcp/asset/4534ff23-ff15-46e5-b5ff-bda9e274d5d7" style="left:3.17px;top:7.25px;width:10.91px;height:13.5px;"><img src="https://www.figma.com/api/mcp/asset/13278c41-5050-439b-853b-c45897162683" style="left:14.08px;top:7.25px;width:10.92px;height:13.52px;"><img src="https://www.figma.com/api/mcp/asset/5ad80a5d-cb26-4558-b933-1c26625b38cc" style="left:11.5px;top:8.69px;width:5.16px;height:10.64px;"></div>
+                        <div class="card-brand"><img src="https://www.figma.com/api/mcp/asset/2bbc1fb7-b858-491c-890d-adc9d16b2dce" style="left:1.98px;top:5px;width:24.02px;height:18.02px;"></div>
+                        <div class="card-brand"><img src="https://www.figma.com/api/mcp/asset/305cbb83-e4ba-4cd2-b50c-789e7cb3fbf2" style="top:0;left:0;width:100%;height:100%;"></div>
+                        <div class="card-brand"><img src="https://www.figma.com/api/mcp/asset/47ab7070-36ef-469b-9ad5-cb5c571b7b99" style="left:4px;top:6px;width:20px;height:16px;"></div>
+                      </div>
+                    </div>
+                    <div class="card-row-bottom">
+                      <div class="card-half"><input type="text" placeholder="MM / YY" autocomplete="cc-exp" inputmode="numeric" maxlength="7" oninput="formatExpiry(this)"></div>
+                      <div class="card-half"><input type="text" placeholder="CVC" autocomplete="cc-csc" inputmode="numeric" maxlength="4"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="fields-row">
+              <div class="field"><label>Country</label><input class="input-box" type="text" value="United States" autocomplete="country-name"></div>
+              <div class="field"><label>Zip</label><input class="input-box" type="text" placeholder="10001" inputmode="numeric"></div>
+            </div>
+            <div class="save-card-box" onclick="toggleCb('p-chk-save')">
+              <div class="checkbox-lg" id="p-chk-save"></div>
+              <div class="save-card-text"><strong>Save my card details for a faster checkout</strong> with Wiser next time</div>
+            </div>
+            <div class="aione-row" onclick="toggleCb('p-chk-aione')">
+              <div class="checkbox-sm" id="p-chk-aione"></div>
+              <span class="aione-text">AIONE may send me updates via email</span>
+            </div>
+            <button class="pay-btn">Pay $1,088.00</button>
+            <div class="price-breakdown"><span>Price breakdown</span><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="#5f6364" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+            <p class="footer-text">Sold by Paddle.com Market Limited, UK, Data shared with<br>Sellername for fulfilment.&nbsp;<a href="#">Terms</a>&nbsp;<a href="#">Privacy</a></p>
+          </div>
+
+        </div>
+      </div><!-- /flow-prefill -->
+
+    </div><!-- /screen-scroll -->
+    <div class="home-bar"><div class="home-bar-pill"></div></div>
+  </div><!-- /screen -->
+</div><!-- /iphone -->
+
+<p class="scene-caption">iPhone 15 Pro · 390 × 844 pt</p>
+
+
+<script>
+/* ── Flow switching ──────────────────────────────────────── */
+function switchFlow(flow) {
+  document.getElementById('flow-default').classList.toggle('active', flow === 'default');
+  document.getElementById('flow-prefill').classList.toggle('active', flow === 'prefill');
+  document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.flow === flow));
+  document.querySelector('.screen-scroll').scrollTop = 0;
+}
+
+/* ── State machine factory ───────────────────────────────── */
+function makeFlow(p) {
+  let state = 'default';
+  const g = id => document.getElementById(p + id);
+
+  const wExpress   = g('-wrap-express');
+  const wDivider   = g('-wrap-divider');
+  const wTiles     = g('-wrap-tiles');
+  const wTileSel   = g('-wrap-tile-selected');
+  const wPayAnother= g('-wrap-pay-another-way');
+  const wCardFields= g('-wrap-card-fields');
+  const btnPP      = g('-btn-paypal');
+  const btnAP      = g('-btn-applepay');
+
+  const close = el => el.classList.add('closed');
+  const open  = el => el.classList.remove('closed');
+
+  function selectPayPal() {
+    if (state === 'paypal') return;
+    state = 'paypal';
+    btnPP.classList.add('express-active');
+    btnPP.classList.remove('express-deactive');
+    btnAP.classList.remove('express-active');
+    btnAP.classList.add('express-deactive');
+    close(wDivider); close(wTiles); close(wCardFields); close(wTileSel);
+    requestAnimationFrame(() => open(wPayAnother));
+  }
+  function selectApplePay() {
+    if (state === 'apple-pay') return;
+    state = 'apple-pay';
+    btnAP.classList.add('express-active');
+    btnAP.classList.remove('express-deactive');
+    btnPP.classList.remove('express-active');
+    btnPP.classList.add('express-deactive');
+    close(wDivider); close(wTiles); close(wCardFields); close(wTileSel);
+    requestAnimationFrame(() => open(wPayAnother));
+  }
+  function selectTile(key) {
+    if (state === 'tile-selected') { updateTile(key); return; }
+    state = 'tile-selected';
+    updateTile(key);
+    btnPP.classList.remove('express-active'); btnPP.classList.remove('express-deactive');
+    btnAP.classList.remove('express-active'); btnAP.classList.remove('express-deactive');
+    close(wExpress); close(wDivider); close(wTiles); close(wCardFields);
+    requestAnimationFrame(() => { open(wTileSel); open(wPayAnother); });
+  }
+  function selectDefault() {
+    if (state === 'default') return;
+    state = 'default';
+    btnPP.classList.remove('express-active'); btnPP.classList.remove('express-deactive');
+    btnAP.classList.remove('express-active'); btnAP.classList.remove('express-deactive');
+    close(wTileSel); close(wPayAnother);
+    requestAnimationFrame(() => { open(wExpress); open(wDivider); open(wTiles); open(wCardFields); });
+  }
+
+  function updateTile(key) {
+    /* Default flow: plain icon + name */
+    const iconEl = document.getElementById(p + '-tile-icon');
+    const nameEl = document.getElementById(p + '-tile-name');
+    if (iconEl) { iconEl.src = D_TILES[key].icon; nameEl.textContent = D_TILES[key].name; }
+    /* Pre-fill flow: colored tile (only for pf-selected-tile, not default flow) */
+    const pfTile = document.getElementById(p + '-selected-tile');
+    if (pfTile && pfTile.classList.contains('pf-selected-tile')) {
+      const t = PF_TILES[key];
+      pfTile.style.background = t.bg;
+      pfTile.style.border = t.border;
+      pfTile.innerHTML = t.html;
+    }
+  }
+  return { selectPayPal, selectApplePay, selectTile, selectDefault };
+}
+
+/* ── Tile data ───────────────────────────────────────────── */
+const D_TILES = {
+  venmo:    { name:'Venmo',      icon:'https://www.figma.com/api/mcp/asset/62961c76-0af2-4389-81e6-f10aca544e0c' },
+  gpay:     { name:'Google Pay', icon:'https://www.figma.com/api/mcp/asset/4a60d2cd-8698-49f8-a182-5c1e8e7600bd' },
+  bank:     { name:'Bank',       icon:'https://www.figma.com/api/mcp/asset/fa07410b-0d92-49d3-a07e-f811bf9169c4' },
+  klarna:   { name:'Klarna',     icon:'https://www.figma.com/api/mcp/asset/b24b2211-aab8-4b91-bf62-a542a17efefe' },
+  afterpay: { name:'Afterpay',   icon:'https://www.figma.com/api/mcp/asset/274e82e7-60bd-49f0-a31a-9d0a6d0a2171' },
+  crypto:   { name:'Crypto',     icon:'https://www.figma.com/api/mcp/asset/e155a2b4-66e3-4b72-b97c-2534dfb3c530' },
+};
+
+const PF_TILES = {
+  klarna:   { bg:'#ffb3c7', border:'none', html:`<img src="https://www.figma.com/api/mcp/asset/b69d055e-22cd-4e93-ae3b-6405e80a8fb1" style="width:57px;height:13px;object-fit:contain;">` },
+  gpay:     { bg:'#fff',    border:'1px solid #d8dbde', html:`<div style="position:relative;width:50px;height:19px;"><img style="position:absolute;left:0;top:1px;width:16px;height:16px;" src="https://www.figma.com/api/mcp/asset/341324b3-a27d-4bbf-b63a-4e132c400db4"><img style="position:absolute;left:21px;top:0;width:28px;height:18px;" src="https://www.figma.com/api/mcp/asset/8d4bb71f-3a06-48b3-8dbb-21259ba1b62c"></div>` },
+  venmo:    { bg:'#008cff', border:'none', html:`<img src="https://www.figma.com/api/mcp/asset/c00df829-c5ae-4dfd-9eec-6d1852b39712" style="width:37px;height:37px;object-fit:cover;">` },
+  bank:     { bg:'#5c5aee', border:'none', html:`<div style="background:#fff;border-radius:8px;width:32px;height:32px;display:flex;align-items:center;justify-content:center;"><img src="https://www.figma.com/api/mcp/asset/26700113-e368-4bad-adfb-53978fc4d716" style="width:20px;height:20px;"></div><span style="color:#fff;font-size:12px;font-weight:500;font-family:'Lato',sans-serif;">Bank</span>` },
+  afterpay: { bg:'#b2fce5', border:'none', html:`<img src="https://www.figma.com/api/mcp/asset/ddd3171c-1cf6-49e3-944f-913e15126bcf" style="width:92px;height:32px;object-fit:cover;">` },
+  crypto:   { bg:'#f7931a', border:'none', html:`<img src="https://www.figma.com/api/mcp/asset/dd3a8764-0c48-4955-9924-81d568e78e60" style="width:48px;height:48px;object-fit:cover;">` },
+};
+
+/* ── Init flows ──────────────────────────────────────────── */
+const D = makeFlow('d');
+const P = makeFlow('p');
+
+/* ── Shared helpers ──────────────────────────────────────── */
+function toggleCb(id) { document.getElementById(id).classList.toggle('checked'); }
+function formatCardNumber(i) { let v=i.value.replace(/\D/g,'').slice(0,16); i.value=v.match(/.{1,4}/g)?.join(' ')??v; }
+function formatExpiry(i) { let v=i.value.replace(/\D/g,'').slice(0,4); if(v.length>=3)v=v.slice(0,2)+' / '+v.slice(2); i.value=v; }
+</script>
+
+</body>
+</html>

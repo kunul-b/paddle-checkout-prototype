@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:www.figma.com)",
+      "Bash(find /Users/kunul.bhagalia/Paddle -type f -name .*)",
+      "Bash(grep -v \"^\\\\.$\")",
+      "Bash(grep -v \"^\\\\.\\\\.$\")",
+      "mcp__claude_ai_Figma__get_design_context",
+      "mcp__claude_ai_Figma__use_figma",
+      "mcp__claude_ai_Figma__get_screenshot",
+      "Bash(open:*)",
+      "Read(//Users/kunul.bhagalia/.claude/skills/**)",
+      "Read(//Users/kunul.bhagalia/.claude/skills/figma-generate-design/**)",
+      "mcp__claude_ai_Figma__search_design_system",
+      "Bash(lsof -ti:3000)",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
+    ]
+  }
+}
