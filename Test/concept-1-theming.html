@@ -1,0 +1,1626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Concept 1 — Inline Mode Toggle</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+  background: #e5e7eb;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+}
+
+.browser {
+  width: 100%;
+  max-width: 1280px;
+  height: 85vh;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgba(0,0,0,0.18), 0 0 0 1px rgba(0,0,0,0.08);
+}
+
+.title-bar {
+  height: 36px;
+  background: #dee1e6;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  flex-shrink: 0;
+}
+.traffic-lights { display: flex; gap: 6px; }
+.dot { width: 12px; height: 12px; border-radius: 50%; }
+.dot.red { background: #ff5f57; }
+.dot.yellow { background: #febc2e; }
+.dot.green { background: #28c840; }
+.url-bar { flex: 1; display: flex; justify-content: center; }
+.url-bar-inner {
+  background: rgba(255,255,255,0.7);
+  border-radius: 6px;
+  padding: 2px 16px;
+  font-size: 11px;
+  color: #666;
+  width: 320px;
+  text-align: center;
+}
+.title-bar-spacer { width: 52px; }
+
+.nav-bar {
+  height: 48px;
+  background: #2B3242;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  flex-shrink: 0;
+}
+.nav-left { display: flex; align-items: center; gap: 16px; }
+.nav-title { color: white; font-size: 14px; font-weight: 500; }
+.nav-divider { width: 1px; height: 16px; background: rgba(255,255,255,0.2); }
+.concept-tab {
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  background: #2F6DEA;
+  color: white;
+}
+.nav-right { display: flex; gap: 8px; }
+.btn-nav-ghost {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #a2abbd;
+  cursor: pointer;
+}
+.btn-nav-primary {
+  padding: 4px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #2F6DEA;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.layout {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  background: #f8f9fb;
+}
+
+.settings-panel {
+  width: 420px;
+  border-right: 1px solid #EBECF0;
+  background: white;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+.sp-inner { padding: 24px; }
+
+.page-header { margin-bottom: 24px; }
+.page-header h2 { font-size: 16px; font-weight: 600; color: #36476c; margin-bottom: 4px; line-height: 1.4; }
+.page-header p { font-size: 13px; color: #a2abbd; line-height: 1.5; }
+
+.mode-toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f8f9fb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+}
+.mode-row-label { display: flex; align-items: center; gap: 8px; }
+.mode-row-label span { font-size: 13px; color: #36476c; font-weight: 500; }
+.mode-toggle-btns {
+  display: flex;
+  background: #f3f4f6;
+  border-radius: 8px;
+  padding: 4px;
+  gap: 2px;
+}
+.mode-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: #a2abbd;
+  transition: all 0.15s;
+}
+.mode-btn.active-light { background: white; color: #36476c; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+.mode-btn.active-dark { background: #2B3242; color: white; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+/* Auto-generate section */
+.autogen-section { margin-bottom: 16px; }
+.autogen-header { margin-bottom: 10px; }
+.url-row { display: flex; gap: 6px; margin-top: 10px; }
+.url-input {
+  flex: 1; height: 36px;
+  border: 1px solid #d2d4de; border-radius: 6px;
+  padding: 0 12px; font-size: 13px; color: #36476c; outline: none;
+  background: white;
+}
+.url-input:focus { border-color: #2F6DEA; }
+.url-input::placeholder { color: #a2abbd; }
+.url-gen-btn {
+  height: 36px; padding: 0 14px; border-radius: 6px; font-size: 13px;
+  background: #2F6DEA; color: white; border: none; cursor: pointer;
+  font-weight: 500; white-space: nowrap; transition: opacity 0.15s;
+  font-family: inherit;
+}
+.url-gen-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.gen-status {
+  display: none; align-items: center; gap: 6px;
+  font-size: 12px; margin-top: 8px;
+}
+.gen-status.visible { display: flex; }
+.gen-status.loading { color: #a2abbd; }
+.gen-status.success { color: #16a34a; }
+.gen-status.error   { color: #dc2626; }
+.gen-swatches {
+  display: none; gap: 5px; margin-top: 10px; flex-wrap: wrap; align-items: center;
+}
+.gen-swatches.visible { display: flex; }
+.gen-swatch-label { font-size: 11px; color: #a2abbd; margin-right: 2px; }
+.gen-swatch {
+  width: 18px; height: 18px; border-radius: 4px;
+  border: 1px solid rgba(0,0,0,0.1); cursor: default;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 12px; height: 12px; border: 2px solid #d2d4de;
+  border-top-color: #2F6DEA; border-radius: 50%;
+  animation: spin 0.7s linear infinite; flex-shrink: 0;
+}
+
+/* Enable dark mode row */
+.enable-dark-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px;
+  background: #f8f9fb;
+  border-radius: 8px;
+  margin-bottom: 8px;
+}
+.enable-dark-label { display: flex; align-items: center; gap: 8px; }
+.enable-dark-label span { font-size: 13px; color: #36476c; font-weight: 500; }
+.enable-dark-label .label-sub { font-size: 11px; color: #a2abbd; font-weight: 400; }
+
+/* Toggle switch */
+.toggle-switch { position: relative; display: inline-flex; align-items: center; cursor: pointer; }
+.toggle-switch input { position: absolute; opacity: 0; width: 0; height: 0; }
+.toggle-track {
+  width: 36px; height: 20px;
+  background: #d2d4de;
+  border-radius: 10px;
+  transition: background 0.2s;
+  position: relative;
+  flex-shrink: 0;
+}
+.toggle-thumb {
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 16px; height: 16px;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+}
+.toggle-switch input:checked ~ .toggle-track { background: #2F6DEA; }
+.toggle-switch input:checked ~ .toggle-track .toggle-thumb { transform: translateX(16px); }
+
+/* Mode toggle row — hidden when dark mode is disabled */
+.mode-toggle-row { transition: opacity 0.15s; }
+.mode-toggle-row.hidden-row { display: none; }
+
+.context-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+.context-banner.light-banner { background: #fffbeb; color: #b45309; }
+.context-banner.dark-banner { background: #1a1a2e; color: #8a8aff; }
+
+.divider { height: 1px; background: #EBECF0; }
+
+.sections { margin-top: 24px; }
+.section-gap { height: 24px; }
+
+.sh-title { font-size: 13px; color: #36476c; font-weight: 500; }
+.sh-sub { font-size: 11px; color: #a2abbd; margin-top: 2px; }
+
+.collapsible-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 8px 0;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  text-align: left;
+}
+.collapsible-header .ch-title { font-size: 13px; color: #36476c; font-weight: 500; }
+.collapsible-body { padding-bottom: 16px; display: flex; flex-direction: column; gap: 12px; }
+.collapsible-body.hidden { display: none; }
+
+/* Field Row */
+.field-row { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+.field-label { font-size: 13px; color: #36476c; }
+
+/* Synced Row — structural fields always synced, shows a chip indicator */
+.synced-row { display: flex; align-items: center; gap: 8px; width: 100%; }
+.synced-row .field-row { flex: 1; }
+
+/* Sync chip — only visible when dark mode is enabled */
+.sync-chip { display: none; }
+.dark-enabled .sync-chip {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 7px 3px 5px;
+  background: #eff4ff;
+  border: 1px solid #d1e0fd;
+  border-radius: 4px;
+  color: #4a7cf8;
+  font-size: 10px;
+  font-weight: 500;
+  flex-shrink: 0;
+  cursor: default;
+  white-space: nowrap;
+  user-select: none;
+  line-height: 1;
+}
+
+/* Input */
+.input-wrap { position: relative; height: 32px; width: 140px; }
+.field-input {
+  height: 100%; width: 100%;
+  border: 1px solid #d2d4de; border-radius: 4px;
+  padding: 0 26px 0 10px;
+  font-size: 13px; color: #36476c; background: white;
+  outline: none;
+}
+.field-input:focus { border-color: #2F6DEA; }
+.stepper {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 1px;
+}
+.stepper button {
+  border: none; background: transparent; cursor: pointer;
+  padding: 0; line-height: 0; display: flex; color: #73809C;
+}
+
+/* Select */
+.select-wrap { position: relative; height: 32px; width: 140px; }
+.field-select {
+  height: 100%; width: 100%;
+  border: 1px solid #d2d4de; border-radius: 4px;
+  padding: 0 24px 0 10px;
+  font-size: 13px; color: #36476c; background: white;
+  appearance: none; cursor: pointer; outline: none;
+}
+.field-select:focus { border-color: #2F6DEA; }
+.select-arrow {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  pointer-events: none; color: #73809C; display: flex;
+}
+
+/* Color */
+.color-wrap { position: relative; height: 32px; width: 140px; }
+.color-text {
+  height: 100%; width: 100%;
+  border: 1px solid #d2d4de; border-radius: 4px;
+  padding: 0 32px 0 10px;
+  font-size: 13px; color: #36476c; background: white;
+  outline: none;
+}
+.color-text:focus { border-color: #2F6DEA; }
+.color-swatch-label {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  width: 16px; height: 16px;
+  border-radius: 3px; border: 1px solid #d2d4de;
+  cursor: pointer; overflow: hidden;
+}
+.color-swatch-inner { width: 100%; height: 100%; display: block; }
+.color-picker-input { position: absolute; opacity: 0; width: 0; height: 0; }
+
+/* Exclusive blocks */
+.excl-block {
+  margin-top: 4px; padding: 10px;
+  border-radius: 6px; border: 1px dashed;
+}
+.excl-dark { background: #f0f0ff; border-color: #c7c7ff; }
+.excl-light { background: #fffbeb; border-color: #fbbf24; }
+.excl-header { display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+.excl-title { font-size: 11px; font-weight: 500; }
+.excl-dark .excl-title { color: #4361ee; }
+.excl-light .excl-title { color: #b45309; }
+.excl-fields { display: flex; flex-direction: column; gap: 8px; }
+
+/* dark-only / light-only */
+.dark-only { display: none; }
+.light-only { display: block; }
+.in-dark .dark-only { display: block; }
+.in-dark .light-only { display: none; }
+
+/* Preview Panel */
+.preview-panel {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  transition: background-color 0.3s;
+}
+.preview-content { width: 380px; }
+.preview-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
+.preview-label { font-size: 12px; }
+.preview-actions { display: flex; gap: 4px; }
+.btn-preview-reset {
+  padding: 4px 8px; border-radius: 4px; font-size: 11px;
+  border: 1px solid rgba(0,0,0,0.15); background: rgba(255,255,255,0.1);
+  cursor: pointer; color: #666;
+}
+.btn-preview-save {
+  padding: 4px 8px; border-radius: 4px; font-size: 11px;
+  background: #2F6DEA; color: white; border: none; cursor: pointer;
+}
+
+/* Checkout Preview */
+.checkout-card {
+  border-radius: 8px; border: 1px solid;
+  overflow: hidden; transition: background-color 0.3s, border-color 0.3s;
+}
+.checkout-tabs { display: flex; border-bottom: 1px solid; }
+.checkout-tab {
+  flex: 1; padding: 12px; text-align: center; font-size: 12px;
+  cursor: pointer; border: none; background: transparent; transition: color 0.15s;
+}
+.checkout-form { padding: 16px; }
+.form-field { margin-bottom: 12px; }
+.form-label { font-size: 11px; margin-bottom: 4px; display: block; }
+.form-input-mock {
+  border-radius: 4px; border: 1px solid;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+.form-row { display: flex; gap: 8px; margin-bottom: 12px; }
+.form-half { flex: 1; }
+.pay-btn-wrap { display: flex; justify-content: center; margin-top: 8px; }
+.cancel-btn-wrap { display: flex; justify-content: center; margin-top: 8px; }
+.installment-note { font-size: 10px; text-align: center; margin: 8px 0 4px; }
+</style>
+</head>
+<body>
+<div class="browser">
+
+  <div class="title-bar">
+    <div class="traffic-lights">
+      <div class="dot red"></div>
+      <div class="dot yellow"></div>
+      <div class="dot green"></div>
+    </div>
+    <div class="url-bar">
+      <div class="url-bar-inner">dashboard.checkout.com/settings/theming</div>
+    </div>
+    <div class="title-bar-spacer"></div>
+  </div>
+
+  <div class="nav-bar">
+    <div class="nav-left">
+      <span class="nav-title">Checkout Settings — Theming Exploration</span>
+      <div class="nav-divider"></div>
+      <button class="concept-tab">Concept 1: Inline Mode Toggle</button>
+    </div>
+    <div class="nav-right">
+      <button class="btn-nav-ghost" onclick="resetAll()">Reset</button>
+      <button class="btn-nav-primary">Save</button>
+    </div>
+  </div>
+
+  <div class="layout" id="layout">
+
+    <!-- Settings Panel -->
+    <div class="settings-panel">
+      <div class="sp-inner">
+
+        <div class="page-header">
+          <h2>Concept 1: Inline Mode Toggle</h2>
+          <p>Toggle between light/dark at the top. Settings below adapt contextually — colors, defaults, and exclusive options change per mode.</p>
+        </div>
+
+        <!-- Auto-generate from URL -->
+        <div class="autogen-section">
+          <div class="autogen-header">
+            <div class="sh-title">Auto-generate from website</div>
+            <div class="sh-sub">Paste your URL to extract brand colours and styles</div>
+          </div>
+          <div class="url-row">
+            <input type="url" id="siteUrl" class="url-input" placeholder="https://yourwebsite.com"
+              onkeydown="if(event.key==='Enter') generateFromUrl()">
+            <button class="url-gen-btn" id="genBtn" onclick="generateFromUrl()">Generate</button>
+          </div>
+          <div class="gen-status" id="genStatus"></div>
+          <div class="gen-swatches" id="genSwatches"></div>
+        </div>
+
+        <div class="divider" style="margin-bottom:16px"></div>
+
+        <!-- Enable dark mode toggle -->
+        <div class="enable-dark-row">
+          <div class="enable-dark-label">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#36476c" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <div>
+              <div>Enable dark mode</div>
+              <div class="label-sub">Offer customers a dark theme option</div>
+            </div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="darkModeEnabled" onchange="onDarkModeToggle(this.checked)">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          </label>
+        </div>
+
+        <div class="mode-toggle-row hidden-row" id="modeToggleRow">
+          <div class="mode-row-label">
+            <span id="modeIcon"></span>
+            <span id="modeText">Light Mode Settings</span>
+          </div>
+          <div class="mode-toggle-btns">
+            <button class="mode-btn" id="btnLight" onclick="setMode('light')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+              Light
+            </button>
+            <button class="mode-btn" id="btnDark" onclick="setMode('dark')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+              Dark
+            </button>
+          </div>
+        </div>
+
+        <div class="context-banner light-banner" id="contextBanner">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          <span id="bannerText">Editing light mode values. These apply only when customers view in light mode.</span>
+        </div>
+
+        <div class="divider"></div>
+
+        <div class="sections">
+          <div class="section-gap"></div>
+
+          <div style="margin-bottom:12px">
+            <div class="sh-title">Buttons</div>
+            <div class="sh-sub">All button styles</div>
+          </div>
+
+          <!-- All Buttons -->
+          <div style="margin-bottom:12px">
+            <div class="sh-title" style="margin-bottom:12px">All Buttons</div>
+            <div style="display:flex;flex-direction:column;gap:12px">
+
+              <!-- Button Width — always synced -->
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Button width (%)</span>
+                  <div class="input-wrap">
+                    <input class="field-input" id="f-buttonWidth" type="text" data-structural="buttonWidth">
+                    <div class="stepper">
+                      <button data-step-up="buttonWidth"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+                      <button data-step-down="buttonWidth"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+
+              <!-- Focus State — always synced -->
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Focus state</span>
+                  <div class="select-wrap">
+                    <select class="field-select" id="f-focusState" data-structural="focusState">
+                      <option>Yes</option><option>No</option>
+                    </select>
+                    <span class="select-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Primary Button -->
+          <div>
+            <button class="collapsible-header" data-collapsible="primary">
+              <span class="ch-title">Primary Button</span>
+              <span class="ch-icon" id="ch-primary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+            </button>
+            <div class="collapsible-body" id="body-primary">
+
+              <!-- Height — always synced -->
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Height (px)</span>
+                  <div class="input-wrap">
+                    <input class="field-input" id="f-primaryHeight" type="text" data-structural="primaryHeight">
+                    <div class="stepper">
+                      <button data-step-up="primaryHeight"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+                      <button data-step-down="primaryHeight"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+
+              <!-- Radius — always synced -->
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Radius (px)</span>
+                  <div class="input-wrap">
+                    <input class="field-input" id="f-primaryRadius" type="text" data-structural="primaryRadius">
+                    <div class="stepper">
+                      <button data-step-up="primaryRadius"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+                      <button data-step-down="primaryRadius"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+
+              <!-- Background color — mode-specific -->
+              <div class="field-row">
+                <span class="field-label">Background color</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-primaryBg" type="text" data-color="primaryBg">
+                  <label class="color-swatch-label">
+                    <span class="color-swatch-inner" id="sw-primaryBg"></span>
+                    <input class="color-picker-input" type="color" id="cp-primaryBg" data-color="primaryBg">
+                  </label>
+                </div>
+              </div>
+
+              <!-- Hover color — mode-specific -->
+              <div class="field-row">
+                <span class="field-label">Hover color</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-primaryHover" type="text" data-color="primaryHover">
+                  <label class="color-swatch-label">
+                    <span class="color-swatch-inner" id="sw-primaryHover"></span>
+                    <input class="color-picker-input" type="color" id="cp-primaryHover" data-color="primaryHover">
+                  </label>
+                </div>
+              </div>
+
+              <!-- Dark-only glow block -->
+              <div class="dark-only excl-block excl-dark">
+                <div class="excl-header">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="#4361ee"/><circle cx="17.5" cy="10.5" r=".5" fill="#4361ee"/><circle cx="8.5" cy="7.5" r=".5" fill="#4361ee"/><circle cx="6.5" cy="12.5" r=".5" fill="#4361ee"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                  <span class="excl-title">Dark mode exclusive</span>
+                </div>
+                <div class="excl-fields">
+                  <div class="field-row">
+                    <span class="field-label">Glow effect</span>
+                    <div class="select-wrap">
+                      <select class="field-select" id="f-glowEffect" data-color="glowEffect">
+                        <option>None</option><option>Subtle</option><option>Strong</option>
+                      </select>
+                      <span class="select-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Glow color</span>
+                    <div class="color-wrap">
+                      <input class="color-text" id="f-glowColor" type="text" data-color="glowColor">
+                      <label class="color-swatch-label">
+                        <span class="color-swatch-inner" id="sw-glowColor"></span>
+                        <input class="color-picker-input" type="color" id="cp-glowColor" data-color="glowColor">
+                      </label>
+                    </div>
+                  </div>
+                  <div class="field-row">
+                    <span class="field-label">Glow radius</span>
+                    <div class="color-wrap">
+                      <input class="color-text" id="f-glowRadius" type="text" data-color="glowRadius">
+                      <label class="color-swatch-label">
+                        <span class="color-swatch-inner" id="sw-glowRadius"></span>
+                        <input class="color-picker-input" type="color" id="cp-glowRadius" data-color="glowRadius">
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Primary Button Border -->
+          <div>
+            <button class="collapsible-header" data-collapsible="primaryBorder">
+              <span class="ch-title">Primary Button Border</span>
+              <span class="ch-icon" id="ch-primaryBorder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+            </button>
+            <div class="collapsible-body hidden" id="body-primaryBorder">
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Border</span>
+                  <div class="select-wrap">
+                    <select class="field-select" id="f-primaryBorder" data-structural="primaryBorder">
+                      <option>No</option><option>Yes</option>
+                    </select>
+                    <span class="select-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Primary Button Font -->
+          <div>
+            <button class="collapsible-header" data-collapsible="primaryFont">
+              <span class="ch-title">Primary Button Font</span>
+              <span class="ch-icon" id="ch-primaryFont"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+            </button>
+            <div class="collapsible-body hidden" id="body-primaryFont">
+              <!-- Font size — always synced -->
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Size (px)</span>
+                  <div class="input-wrap">
+                    <input class="field-input" id="f-primaryFontSize" type="text" data-structural="primaryFontSize">
+                    <div class="stepper">
+                      <button data-step-up="primaryFontSize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+                      <button data-step-down="primaryFontSize"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+              <!-- Font color — mode-specific -->
+              <div class="field-row">
+                <span class="field-label">Color</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-primaryFontColor" type="text" data-color="primaryFontColor">
+                  <label class="color-swatch-label">
+                    <span class="color-swatch-inner" id="sw-primaryFontColor"></span>
+                    <input class="color-picker-input" type="color" id="cp-primaryFontColor" data-color="primaryFontColor">
+                  </label>
+                </div>
+              </div>
+              <!-- Font hover — mode-specific -->
+              <div class="field-row">
+                <span class="field-label">Hover</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-primaryFontHover" type="text" data-color="primaryFontHover">
+                  <label class="color-swatch-label">
+                    <span class="color-swatch-inner" id="sw-primaryFontHover"></span>
+                    <input class="color-picker-input" type="color" id="cp-primaryFontHover" data-color="primaryFontHover">
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Secondary Button -->
+          <div>
+            <button class="collapsible-header" data-collapsible="secondary">
+              <span class="ch-title">Secondary Button</span>
+              <span class="ch-icon" id="ch-secondary"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+            </button>
+            <div class="collapsible-body hidden" id="body-secondary">
+              <!-- Height — always synced -->
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Height (px)</span>
+                  <div class="input-wrap">
+                    <input class="field-input" id="f-secondaryHeight" type="text" data-structural="secondaryHeight">
+                    <div class="stepper">
+                      <button data-step-up="secondaryHeight"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+                      <button data-step-down="secondaryHeight"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+              <!-- Radius — always synced -->
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Radius (px)</span>
+                  <div class="input-wrap">
+                    <input class="field-input" id="f-secondaryRadius" type="text" data-structural="secondaryRadius">
+                    <div class="stepper">
+                      <button data-step-up="secondaryRadius"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+                      <button data-step-down="secondaryRadius"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+                    </div>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+              <!-- Bg color — mode-specific -->
+              <div class="field-row">
+                <span class="field-label">Background color</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-secondaryBg" type="text" data-color="secondaryBg">
+                  <label class="color-swatch-label">
+                    <span class="color-swatch-inner" id="sw-secondaryBg"></span>
+                    <input class="color-picker-input" type="color" id="cp-secondaryBg" data-color="secondaryBg">
+                  </label>
+                </div>
+              </div>
+              <!-- Hover color — mode-specific -->
+              <div class="field-row">
+                <span class="field-label">Hover color</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-secondaryHover" type="text" data-color="secondaryHover">
+                  <label class="color-swatch-label">
+                    <span class="color-swatch-inner" id="sw-secondaryHover"></span>
+                    <input class="color-picker-input" type="color" id="cp-secondaryHover" data-color="secondaryHover">
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Secondary Button Border -->
+          <div>
+            <button class="collapsible-header" data-collapsible="secondaryBorder">
+              <span class="ch-title">Secondary Button Border</span>
+              <span class="ch-icon" id="ch-secondaryBorder"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+            </button>
+            <div class="collapsible-body hidden" id="body-secondaryBorder">
+              <div class="synced-row">
+                <div class="field-row">
+                  <span class="field-label">Border</span>
+                  <div class="select-wrap">
+                    <select class="field-select" id="f-secondaryBorder" data-structural="secondaryBorder">
+                      <option>No</option><option>Yes</option>
+                    </select>
+                    <span class="select-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+                  </div>
+                </div>
+                <div class="sync-chip" title="Synced across light & dark modes">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17H7A5 5 0 0 1 7 7h2"/><path d="M15 7h2a5 5 0 1 1 0 10h-2"/><line x1="8" x2="16" y1="12" y2="12"/></svg>
+                  Both
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Light-only exclusive -->
+          <div class="light-only" id="lightOnlyShadow">
+            <div class="excl-block excl-light" style="margin-bottom:0">
+              <div class="excl-header">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>
+                <span class="excl-title">Light mode exclusive</span>
+              </div>
+              <div class="excl-fields">
+                <div class="field-row">
+                  <span class="field-label">Button shadow</span>
+                  <div class="select-wrap">
+                    <select class="field-select"><option>Small</option><option>None</option><option>Medium</option><option>Large</option></select>
+                    <span class="select-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+                  </div>
+                </div>
+                <div class="field-row">
+                  <span class="field-label">Shadow color</span>
+                  <div class="color-wrap">
+                    <input class="color-text" type="text" value="#00000010">
+                    <label class="color-swatch-label">
+                      <span class="color-swatch-inner" style="background:#00000010"></span>
+                      <input class="color-picker-input" type="color" value="#000000">
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="height:24px"></div>
+            <div class="divider"></div>
+          </div>
+
+          <!-- Inputs -->
+          <div>
+            <button class="collapsible-header" data-collapsible="inputs">
+              <span class="ch-title">Inputs</span>
+              <span class="ch-icon" id="ch-inputs"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+            </button>
+            <div class="collapsible-body hidden" id="body-inputs">
+              <div class="field-row">
+                <span class="field-label">Background</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-inputBg" type="text">
+                  <label class="color-swatch-label"><span class="color-swatch-inner" id="sw-inputBg"></span><input class="color-picker-input" type="color" id="cp-inputBg"></label>
+                </div>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Border</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-inputBorder" type="text">
+                  <label class="color-swatch-label"><span class="color-swatch-inner" id="sw-inputBorder"></span><input class="color-picker-input" type="color" id="cp-inputBorder"></label>
+                </div>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Text</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-inputText" type="text">
+                  <label class="color-swatch-label"><span class="color-swatch-inner" id="sw-inputText"></span><input class="color-picker-input" type="color" id="cp-inputText"></label>
+                </div>
+              </div>
+              <div class="field-row">
+                <span class="field-label">Placeholder</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-inputPlaceholder" type="text">
+                  <label class="color-swatch-label"><span class="color-swatch-inner" id="sw-inputPlaceholder"></span><input class="color-picker-input" type="color" id="cp-inputPlaceholder"></label>
+                </div>
+              </div>
+              <div class="dark-only excl-block excl-dark">
+                <div class="excl-header">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="#4361ee"/><circle cx="17.5" cy="10.5" r=".5" fill="#4361ee"/><circle cx="8.5" cy="7.5" r=".5" fill="#4361ee"/><circle cx="6.5" cy="12.5" r=".5" fill="#4361ee"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                  <span class="excl-title">Dark mode exclusive</span>
+                </div>
+                <div class="field-row">
+                  <span class="field-label">Focus ring</span>
+                  <div class="color-wrap">
+                    <input class="color-text" type="text" value="#4361ee">
+                    <label class="color-swatch-label"><span class="color-swatch-inner" style="background:#4361ee"></span><input class="color-picker-input" type="color" value="#4361ee"></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider"></div>
+
+          <!-- Page Background -->
+          <div style="margin-bottom:24px">
+            <button class="collapsible-header" data-collapsible="pageBg">
+              <span class="ch-title">Page Background</span>
+              <span class="ch-icon" id="ch-pageBg"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg></span>
+            </button>
+            <div class="collapsible-body hidden" id="body-pageBg">
+              <div class="field-row">
+                <span class="field-label">Color</span>
+                <div class="color-wrap">
+                  <input class="color-text" id="f-pageBg" type="text">
+                  <label class="color-swatch-label"><span class="color-swatch-inner" id="sw-pageBg"></span><input class="color-picker-input" type="color" id="cp-pageBg"></label>
+                </div>
+              </div>
+              <div class="dark-only excl-block excl-dark">
+                <div class="excl-header">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2"><circle cx="13.5" cy="6.5" r=".5" fill="#4361ee"/><circle cx="17.5" cy="10.5" r=".5" fill="#4361ee"/><circle cx="8.5" cy="7.5" r=".5" fill="#4361ee"/><circle cx="6.5" cy="12.5" r=".5" fill="#4361ee"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/></svg>
+                  <span class="excl-title">Dark mode exclusive</span>
+                </div>
+                <div class="field-row">
+                  <span class="field-label">Gradient overlay</span>
+                  <div class="select-wrap">
+                    <select class="field-select"><option>None</option><option>Radial</option><option>Linear</option></select>
+                    <span class="select-arrow"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Panel -->
+    <div class="preview-panel" id="previewPanel">
+      <div class="preview-content">
+        <div class="preview-header">
+          <span class="preview-label" id="previewLabel">Preview — light mode</span>
+          <div class="preview-actions">
+            <button class="btn-preview-reset" onclick="resetAll()">Reset</button>
+            <button class="btn-preview-save">Save</button>
+          </div>
+        </div>
+        <div class="checkout-card" id="checkoutCard">
+          <div class="checkout-tabs" id="checkoutTabsBar">
+            <button class="checkout-tab" id="tab-card">Card</button>
+            <button class="checkout-tab" id="tab-paypal">PayPal</button>
+            <button class="checkout-tab" id="tab-applepay">Apple Pay</button>
+          </div>
+          <div class="checkout-form">
+            <div class="form-field">
+              <span class="form-label" id="lbl-email">Email</span>
+              <div class="form-input-mock" id="inp-email"></div>
+            </div>
+            <div class="form-field">
+              <span class="form-label" id="lbl-card">Card number</span>
+              <div class="form-input-mock" id="inp-card"></div>
+            </div>
+            <div class="form-field">
+              <span class="form-label" id="lbl-name">Name on card</span>
+              <div class="form-input-mock" id="inp-name"></div>
+            </div>
+            <div class="form-row">
+              <div class="form-half">
+                <span class="form-label" id="lbl-expiry">Expiry</span>
+                <div class="form-input-mock" id="inp-expiry"></div>
+              </div>
+              <div class="form-half">
+                <span class="form-label" id="lbl-cvv">CVV</span>
+                <div class="form-input-mock" id="inp-cvv"></div>
+              </div>
+            </div>
+            <div class="pay-btn-wrap">
+              <button id="payBtn"
+                onmouseenter="this.dataset.hovered='1';renderPayBtn()"
+                onmouseleave="this.dataset.hovered='';renderPayBtn()"
+                style="font-family:inherit">Pay £1,200.00</button>
+            </div>
+            <div class="installment-note" id="installmentNote">Pay £xx.xx now, then £xx.xx monthly</div>
+            <div class="cancel-btn-wrap">
+              <button id="cancelBtn"
+                onmouseenter="this.dataset.hovered='1';renderCancelBtn()"
+                onmouseleave="this.dataset.hovered='';renderCancelBtn()"
+                style="font-family:inherit">Cancel</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ---- Colour utilities ----
+
+function normalizeHex(hex) {
+  hex = hex.replace('#', '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  return '#' + hex.toLowerCase();
+}
+
+function hexToRgb(hex) {
+  hex = hex.replace('#', '');
+  const n = parseInt(hex, 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function rgbToHex(r, g, b) {
+  return '#' + [r, g, b].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, '0')).join('');
+}
+
+function rgbToHsl(r, g, b) {
+  r /= 255; g /= 255; b /= 255;
+  const max = Math.max(r, g, b), min = Math.min(r, g, b);
+  let h, s, l = (max + min) / 2;
+  if (max === min) { h = s = 0; }
+  else {
+    const d = max - min;
+    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+    switch (max) {
+      case r: h = ((g - b) / d + (g < b ? 6 : 0)) / 6; break;
+      case g: h = ((b - r) / d + 2) / 6; break;
+      case b: h = ((r - g) / d + 4) / 6; break;
+    }
+  }
+  return { h: h * 360, s, l };
+}
+
+function hslToRgb(h, s, l) {
+  h /= 360;
+  const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+  const p = 2 * l - q;
+  const hue2rgb = (p, q, t) => {
+    if (t < 0) t += 1; if (t > 1) t -= 1;
+    if (t < 1/6) return p + (q - p) * 6 * t;
+    if (t < 1/2) return q;
+    if (t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+    return p;
+  };
+  return [hue2rgb(p, q, h + 1/3), hue2rgb(p, q, h), hue2rgb(p, q, h - 1/3)].map(v => Math.round(v * 255));
+}
+
+function darkenHex(hex, amount) {
+  const [r, g, b] = hexToRgb(hex);
+  const { h, s, l } = rgbToHsl(r, g, b);
+  const [nr, ng, nb] = hslToRgb(h, s, Math.max(0, l - amount));
+  return rgbToHex(nr, ng, nb);
+}
+
+function lightenHex(hex, amount) {
+  const [r, g, b] = hexToRgb(hex);
+  const { h, s, l } = rgbToHsl(r, g, b);
+  const [nr, ng, nb] = hslToRgb(h, Math.max(0, s - 0.05), Math.min(1, l + amount));
+  return rgbToHex(nr, ng, nb);
+}
+
+function isNeutral(r, g, b) {
+  const { s, l } = rgbToHsl(r, g, b);
+  return s < 0.1 || l > 0.93 || l < 0.07;
+}
+
+// ---- Auto-generate from URL ----
+
+function setGenStatus(type, msg) {
+  const el = document.getElementById('genStatus');
+  el.className = 'gen-status visible ' + type;
+  if (type === 'loading') {
+    el.innerHTML = `<span class="spinner"></span>${msg}`;
+  } else if (type === 'success') {
+    el.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>${msg}`;
+  } else {
+    el.innerHTML = `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>${msg}`;
+  }
+}
+
+function showGenSwatches(colors) {
+  const el = document.getElementById('genSwatches');
+  if (!colors.length) { el.className = 'gen-swatches'; return; }
+  el.className = 'gen-swatches visible';
+  el.innerHTML = '<span class="gen-swatch-label">Found</span>' +
+    colors.map(c => `<div class="gen-swatch" style="background:${c}" title="${c}"></div>`).join('');
+}
+
+// Try multiple CORS proxies in sequence, return first successful HTML response
+async function fetchViaProxy(url) {
+  const proxies = [
+    {
+      name: 'proxy 1',
+      build: u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+      parse: r => r.text(),
+    },
+    {
+      name: 'proxy 2',
+      build: u => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+      parse: async r => { const d = await r.json(); return d.contents || ''; },
+    },
+    {
+      name: 'proxy 3',
+      build: u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+      parse: r => r.text(),
+    },
+  ];
+
+  let lastErr = null;
+  for (const proxy of proxies) {
+    const ctrl = new AbortController();
+    const t = setTimeout(() => ctrl.abort(), 9000);
+    try {
+      const res = await fetch(proxy.build(url), { signal: ctrl.signal });
+      clearTimeout(t);
+      if (!res.ok) continue;
+      const html = await proxy.parse(res);
+      if (html && html.length > 200) return html;
+    } catch (e) {
+      clearTimeout(t);
+      lastErr = e;
+    }
+  }
+  throw lastErr || new Error('All proxies failed');
+}
+
+async function generateFromUrl() {
+  const urlEl = document.getElementById('siteUrl');
+  const rawUrl = urlEl.value.trim();
+  if (!rawUrl) return;
+
+  let url = rawUrl;
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+  const btn = document.getElementById('genBtn');
+  btn.disabled = true;
+  document.getElementById('genSwatches').className = 'gen-swatches';
+  setGenStatus('loading', 'Fetching website…');
+
+  try {
+    const html = await fetchViaProxy(url);
+
+    setGenStatus('loading', 'Analysing brand styles…');
+    await new Promise(r => setTimeout(r, 200));
+
+    const extracted = extractBrandStyles(html, url);
+    Object.assign(styles.light, extracted.lightUpdate);
+    Object.assign(styles.dark, extracted.darkUpdate);
+    render();
+
+    const hostname = (() => { try { return new URL(url).hostname.replace('www.', ''); } catch { return url; } })();
+    setGenStatus('success', `Applied ${extracted.count} style${extracted.count !== 1 ? 's' : ''} from ${hostname}`);
+    showGenSwatches(extracted.swatchColors);
+
+  } catch (err) {
+    const msg = err.name === 'AbortError'
+      ? 'Request timed out — try again.'
+      : 'Couldn\'t fetch that URL. The site may block external requests.';
+    setGenStatus('error', msg);
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function extractBrandStyles(html, sourceUrl) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(html, 'text/html');
+
+  // Collect all CSS text
+  let cssText = '';
+  doc.querySelectorAll('style').forEach(s => { cssText += ' ' + s.textContent; });
+  doc.querySelectorAll('[style]').forEach(el => { cssText += ' ' + el.getAttribute('style'); });
+
+  const allText = cssText + ' ' + html;
+
+  // --- Extract all colours ---
+  const colorCount = {};
+  const bump = (hex, weight = 1) => {
+    if (!hex) return;
+    hex = normalizeHex(hex);
+    colorCount[hex] = (colorCount[hex] || 0) + weight;
+  };
+
+  // Hex colours
+  for (const m of allText.matchAll(/#([0-9a-fA-F]{6})\b/g)) bump(m[0]);
+  for (const m of allText.matchAll(/#([0-9a-fA-F]{3})\b/g)) bump(normalizeHex(m[0]));
+
+  // rgb/rgba
+  for (const m of allText.matchAll(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/g))
+    bump(rgbToHex(+m[1], +m[2], +m[3]));
+
+  // High-signal hints: theme-color meta tag
+  const themeMeta = doc.querySelector('meta[name="theme-color"]');
+  if (themeMeta) bump(themeMeta.getAttribute('content'), 20);
+
+  // Bump colours appearing near button-related CSS selectors
+  const btnContextMatch = allText.matchAll(/(?:button|\.btn|cta|primary)[^{}]{0,200}(?:#([0-9a-fA-F]{6})|#([0-9a-fA-F]{3}))/gi);
+  for (const m of btnContextMatch) bump(m[1] ? '#' + m[1] : normalizeHex('#' + m[2]), 5);
+
+  // CSS custom properties that hint at brand / primary
+  for (const m of allText.matchAll(/--(?:primary|brand|accent|color-primary|main)[^:]*:\s*(#[0-9a-fA-F]{3,6})/gi))
+    bump(m[1], 15);
+
+  // --- Classify colours ---
+  const brandColors = [];
+  const lightBgs = [];
+
+  for (const [hex, count] of Object.entries(colorCount)) {
+    const [r, g, b] = hexToRgb(hex);
+    const { s, l } = rgbToHsl(r, g, b);
+    if (l > 0.92 && s < 0.15) { lightBgs.push({ hex, count, l }); continue; }
+    if (l < 0.08) continue;
+    if (s < 0.1) continue; // neutral gray
+    brandColors.push({ hex, count, s, l });
+  }
+
+  brandColors.sort((a, b) => b.count - a.count);
+  lightBgs.sort((a, b) => b.count - a.count);
+
+  // --- Build updates ---
+  const lightUpdate = {};
+  const darkUpdate  = {};
+  let count = 0;
+
+  if (brandColors.length) {
+    const primary = brandColors[0].hex;
+    const primaryHover = darkenHex(primary, 0.1);
+    // For dark mode: slightly lighter & more vibrant
+    const darkPrimary = lightenHex(primary, 0.08);
+    const darkHover   = darkenHex(darkPrimary, 0.08);
+
+    lightUpdate.primaryBg    = primary;
+    lightUpdate.primaryHover = primaryHover;
+    darkUpdate.primaryBg     = darkPrimary;
+    darkUpdate.primaryHover  = darkHover;
+
+    // Glow for dark: use primary as glow colour
+    darkUpdate.glowColor = darkPrimary;
+    count += 2;
+  }
+
+  // Border radius — scan for button-related radius
+  const radii = [];
+  for (const m of cssText.matchAll(/border-radius\s*:\s*(\d+)px/gi)) radii.push(+m[1]);
+  if (radii.length) {
+    // Most common radius value, clamped to 0-24
+    const freq = {};
+    radii.forEach(r => freq[r] = (freq[r] || 0) + 1);
+    const dominant = +Object.entries(freq).sort(([,a],[,b]) => b-a)[0][0];
+    const clamped = String(Math.min(24, dominant));
+    lightUpdate.primaryRadius   = clamped;
+    darkUpdate.primaryRadius    = clamped;
+    lightUpdate.secondaryRadius = clamped;
+    darkUpdate.secondaryRadius  = clamped;
+    count += 1;
+  }
+
+  // Font size for buttons
+  const fontSizes = [];
+  for (const m of cssText.matchAll(/font-size\s*:\s*(\d+)px/gi)) {
+    const v = +m[1];
+    if (v >= 12 && v <= 18) fontSizes.push(v);
+  }
+  if (fontSizes.length) {
+    const fs = String(fontSizes[Math.floor(fontSizes.length / 2)]); // median
+    lightUpdate.primaryFontSize = fs;
+    darkUpdate.primaryFontSize  = fs;
+    count += 1;
+  }
+
+  return {
+    lightUpdate,
+    darkUpdate,
+    swatchColors: brandColors.slice(0, 6).map(b => b.hex),
+    count,
+  };
+}
+
+// Structural fields always sync across both modes (no toggle).
+// Color fields are mode-specific and independent.
+
+const STRUCTURAL_KEYS = ['buttonWidth','focusState','primaryHeight','primaryRadius','primaryBorder','primaryFontSize','secondaryHeight','secondaryRadius','secondaryBorder'];
+
+const DEFAULT_LIGHT = {
+  buttonWidth:'100', focusState:'Yes',
+  primaryHeight:'44', primaryRadius:'4',
+  primaryBg:'#2F6DEA', primaryHover:'#1d5bd6',
+  primaryBorder:'No',
+  primaryFontSize:'14', primaryFontColor:'#FFFFFF', primaryFontHover:'#FFFFFF',
+  secondaryHeight:'44', secondaryRadius:'4',
+  secondaryBg:'#FFFFFF', secondaryHover:'#f5f5f5',
+  secondaryBorder:'No',
+  glowEffect:'None', glowColor:'#2F6DEA', glowRadius:'12',
+};
+const DEFAULT_DARK = {
+  buttonWidth:'100', focusState:'Yes',
+  primaryHeight:'44', primaryRadius:'4',
+  primaryBg:'#4361ee', primaryHover:'#3651d4',
+  primaryBorder:'No',
+  primaryFontSize:'14', primaryFontColor:'#FFFFFF', primaryFontHover:'#FFFFFF',
+  secondaryHeight:'44', secondaryRadius:'4',
+  secondaryBg:'#2a2a4a', secondaryHover:'#3a3a5a',
+  secondaryBorder:'No',
+  glowEffect:'Subtle', glowColor:'#4361ee', glowRadius:'12',
+};
+
+let mode = 'light';
+let darkModeEnabled = false;
+let styles = { light: {...DEFAULT_LIGHT}, dark: {...DEFAULT_DARK} };
+
+function s() { return styles[mode]; }
+
+function onDarkModeToggle(enabled) {
+  darkModeEnabled = enabled;
+  if (!enabled) {
+    mode = 'light'; // revert to light when dark mode is disabled
+  }
+  render();
+}
+
+function setMode(m) { mode = m; render(); }
+
+// Structural fields: always write to both modes
+function updateStructural(key, val) {
+  styles.light[key] = val;
+  styles.dark[key] = val;
+  renderPreview();
+}
+
+// Color fields: only update the current mode
+function updateColor(key, val) {
+  styles[mode][key] = val;
+  renderPreview();
+}
+
+function resetAll() {
+  styles = { light: {...DEFAULT_LIGHT}, dark: {...DEFAULT_DARK} };
+  render();
+}
+
+// ---- Render ----
+function render() {
+  const isDark = mode === 'dark';
+  const cur = s();
+
+  // Show/hide the light/dark switcher and sync chips based on darkModeEnabled
+  document.getElementById('modeToggleRow').classList.toggle('hidden-row', !darkModeEnabled);
+  document.getElementById('layout').classList.toggle('dark-enabled', darkModeEnabled);
+
+  // Mode buttons
+  document.getElementById('btnLight').className = 'mode-btn' + (mode === 'light' ? ' active-light' : '');
+  document.getElementById('btnDark').className  = 'mode-btn' + (mode === 'dark'  ? ' active-dark'  : '');
+
+  // Mode label + icon
+  const iconEl = document.getElementById('modeIcon');
+  const textEl = document.getElementById('modeText');
+  if (isDark) {
+    iconEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4361ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>';
+    textEl.textContent = 'Dark Mode Settings';
+  } else {
+    iconEl.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg>';
+    textEl.textContent = 'Light Mode Settings';
+  }
+
+  // Context banner
+  const banner = document.getElementById('contextBanner');
+  banner.className = 'context-banner ' + (isDark ? 'dark-banner' : 'light-banner');
+  document.getElementById('bannerText').textContent =
+    `Editing ${isDark ? 'dark' : 'light'} mode values. These apply only when customers view in ${mode} mode.`;
+
+  // Show/hide mode-specific sections
+  document.getElementById('layout').classList.toggle('in-dark', isDark);
+
+  // Populate all inputs
+  populateFields(cur, isDark);
+
+  renderPreview();
+}
+
+function populateFields(cur, isDark) {
+  const map = {
+    'f-buttonWidth': cur.buttonWidth,
+    'f-focusState': cur.focusState,
+    'f-primaryHeight': cur.primaryHeight,
+    'f-primaryRadius': cur.primaryRadius,
+    'f-primaryBorder': cur.primaryBorder,
+    'f-primaryFontSize': cur.primaryFontSize,
+    'f-secondaryHeight': cur.secondaryHeight,
+    'f-secondaryRadius': cur.secondaryRadius,
+    'f-secondaryBorder': cur.secondaryBorder,
+    'f-primaryBg': cur.primaryBg,
+    'f-primaryHover': cur.primaryHover,
+    'f-glowEffect': cur.glowEffect,
+    'f-glowColor': cur.glowColor,
+    'f-glowRadius': cur.glowRadius,
+    'f-primaryFontColor': cur.primaryFontColor,
+    'f-primaryFontHover': cur.primaryFontHover,
+    'f-secondaryBg': cur.secondaryBg,
+    'f-secondaryHover': cur.secondaryHover,
+  };
+  for (const [id, val] of Object.entries(map)) {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+  }
+
+  // Color swatches for mode-specific color fields
+  ['primaryBg','primaryHover','glowColor','glowRadius','primaryFontColor','primaryFontHover','secondaryBg','secondaryHover'].forEach(k => {
+    const sw = document.getElementById('sw-' + k);
+    if (sw) sw.style.background = cur[k];
+    const cp = document.getElementById('cp-' + k);
+    if (cp && cur[k] && cur[k].startsWith('#') && cur[k].length === 7) cp.value = cur[k];
+  });
+
+  // Static display fields (Inputs section, Page Background)
+  const inputVals = {
+    'f-inputBg':          isDark ? '#0f1129' : '#FFFFFF',
+    'f-inputBorder':      isDark ? '#2a2a4a' : '#d2d4de',
+    'f-inputText':        isDark ? '#e0e0e0' : '#36476c',
+    'f-inputPlaceholder': isDark ? '#6a6a7a' : '#a2abbd',
+    'f-pageBg':           isDark ? '#0f0f1a' : '#f8f9fb',
+  };
+  const swIds = ['sw-inputBg','sw-inputBorder','sw-inputText','sw-inputPlaceholder','sw-pageBg'];
+  Object.entries(inputVals).forEach(([id, val], i) => {
+    const el = document.getElementById(id);
+    if (el) el.value = val;
+    const sw = document.getElementById(swIds[i]);
+    if (sw) sw.style.background = val;
+  });
+}
+
+function renderPreview() {
+  const cur = s();
+  const isDark = mode === 'dark';
+  const pageBg    = isDark ? '#0f0f1a' : '#f8f9fb';
+  const cardBg    = isDark ? '#1a1a2e' : '#ffffff';
+  const cardBorder= isDark ? '#2a2a4a' : '#d2d4de';
+  const mutedText = isDark ? '#8a8a9a' : '#a2abbd';
+  const inputBg   = isDark ? '#0f1129' : '#ffffff';
+  const inputH = Math.max(28, Math.min(60, parseInt(cur.primaryHeight) || 44) * 0.72) + 'px';
+
+  document.getElementById('previewPanel').style.backgroundColor = pageBg;
+  document.getElementById('previewLabel').style.color = mutedText;
+  document.getElementById('previewLabel').textContent = `Preview — ${mode} mode`;
+  document.getElementById('installmentNote').style.color = mutedText;
+
+  const card = document.getElementById('checkoutCard');
+  card.style.backgroundColor = cardBg;
+  card.style.borderColor = cardBorder;
+
+  document.getElementById('checkoutTabsBar').style.borderColor = cardBorder;
+  const tabCard = document.getElementById('tab-card');
+  tabCard.style.color = cur.primaryBg;
+  tabCard.style.borderBottom = `2px solid ${cur.primaryBg}`;
+  tabCard.style.backgroundColor = 'transparent';
+  ['tab-paypal','tab-applepay'].forEach(id => {
+    const t = document.getElementById(id);
+    t.style.color = mutedText;
+    t.style.borderBottom = 'none';
+    t.style.backgroundColor = 'transparent';
+  });
+
+  ['lbl-email','lbl-card','lbl-name','lbl-expiry','lbl-cvv'].forEach(id => {
+    document.getElementById(id).style.color = mutedText;
+  });
+  ['inp-email','inp-card','inp-name','inp-expiry','inp-cvv'].forEach(id => {
+    const el = document.getElementById(id);
+    el.style.backgroundColor = inputBg;
+    el.style.borderColor = cardBorder;
+    el.style.height = inputH;
+  });
+
+  renderPayBtn();
+  renderCancelBtn();
+}
+
+function renderPayBtn() {
+  const cur = s();
+  const isDark = mode === 'dark';
+  const btn = document.getElementById('payBtn');
+  const isHovered = btn.dataset.hovered === '1';
+  const w = Math.min(100, Math.max(20, parseInt(cur.buttonWidth) || 100));
+
+  let shadow = 'none';
+  if (isDark && cur.glowEffect !== 'None') {
+    const r = parseInt(cur.glowRadius) || 12;
+    const op = cur.glowEffect === 'Strong' ? '99' : '66';
+    const spread = cur.glowEffect === 'Strong' ? Math.round(r*0.6) : Math.round(r*0.3);
+    shadow = `0 0 ${r}px ${spread}px ${cur.glowColor}${op}`;
+  }
+
+  Object.assign(btn.style, {
+    width: w + '%',
+    height: (parseInt(cur.primaryHeight) || 44) + 'px',
+    borderRadius: (parseInt(cur.primaryRadius) || 4) + 'px',
+    backgroundColor: isHovered ? cur.primaryHover : cur.primaryBg,
+    color: isHovered ? cur.primaryFontHover : cur.primaryFontColor,
+    fontSize: (parseInt(cur.primaryFontSize) || 14) + 'px',
+    border: cur.primaryBorder === 'Yes' ? `1px solid ${isDark ? '#ffffff30' : '#00000020'}` : 'none',
+    boxShadow: shadow,
+    cursor: 'pointer',
+    fontWeight: '500',
+    transition: 'all 0.15s',
+  });
+}
+
+function renderCancelBtn() {
+  const cur = s();
+  const isDark = mode === 'dark';
+  const btn = document.getElementById('cancelBtn');
+  const isHovered = btn.dataset.hovered === '1';
+  const w = Math.min(100, Math.max(20, parseInt(cur.buttonWidth) || 100));
+
+  Object.assign(btn.style, {
+    width: w + '%',
+    height: (parseInt(cur.secondaryHeight) || 44) + 'px',
+    borderRadius: (parseInt(cur.secondaryRadius) || 4) + 'px',
+    backgroundColor: isHovered ? cur.secondaryHover : cur.secondaryBg,
+    color: isDark ? '#e0e0e0' : '#36476c',
+    border: cur.secondaryBorder === 'Yes'
+      ? `1px solid ${isDark ? '#ffffff20' : '#d2d4de'}`
+      : `1px solid ${isDark ? '#ffffff10' : '#e8e8e8'}`,
+    cursor: 'pointer',
+    fontSize: '12px',
+    transition: 'all 0.15s',
+  });
+}
+
+// ---- Event Listeners ----
+document.addEventListener('DOMContentLoaded', () => {
+
+  // Collapsibles
+  document.querySelectorAll('.collapsible-header').forEach(header => {
+    const id = header.dataset.collapsible;
+    const body = document.getElementById('body-' + id);
+    const icon = document.getElementById('ch-' + id);
+    header.addEventListener('click', () => {
+      const isOpen = !body.classList.contains('hidden');
+      body.classList.toggle('hidden');
+      icon.innerHTML = isOpen
+        ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>'
+        : '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>';
+    });
+  });
+
+  // Structural inputs — always sync both modes
+  document.querySelectorAll('[data-structural]').forEach(el => {
+    const key = el.dataset.structural;
+    el.addEventListener('change', e => updateStructural(key, e.target.value));
+    if (el.tagName === 'INPUT') el.addEventListener('input', e => updateStructural(key, e.target.value));
+  });
+
+  // Steppers
+  document.querySelectorAll('[data-step-up]').forEach(btn => {
+    const key = btn.dataset.stepUp;
+    btn.addEventListener('click', () => {
+      const n = parseInt(styles[mode][key]) || 0;
+      updateStructural(key, String(n + 1));
+      const el = document.getElementById('f-' + key);
+      if (el) el.value = styles[mode][key];
+    });
+  });
+  document.querySelectorAll('[data-step-down]').forEach(btn => {
+    const key = btn.dataset.stepDown;
+    btn.addEventListener('click', () => {
+      const n = parseInt(styles[mode][key]) || 0;
+      if (n > 0) updateStructural(key, String(n - 1));
+      const el = document.getElementById('f-' + key);
+      if (el) el.value = styles[mode][key];
+    });
+  });
+
+  // Color fields — mode-specific only
+  document.querySelectorAll('[data-color]').forEach(el => {
+    const key = el.dataset.color;
+    if (el.type === 'color') {
+      el.addEventListener('input', e => {
+        updateColor(key, e.target.value);
+        const textEl = document.getElementById('f-' + key);
+        if (textEl) textEl.value = e.target.value;
+        const sw = document.getElementById('sw-' + key);
+        if (sw) sw.style.background = e.target.value;
+      });
+    } else {
+      el.addEventListener('input', e => {
+        updateColor(key, e.target.value);
+        const sw = document.getElementById('sw-' + key);
+        if (sw) sw.style.background = e.target.value;
+        const cp = document.getElementById('cp-' + key);
+        if (cp && e.target.value.startsWith('#') && e.target.value.length === 7) cp.value = e.target.value;
+      });
+    }
+  });
+
+  render();
+});
+</script>
+</body>
+</html>
