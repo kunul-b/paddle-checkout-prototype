@@ -38,7 +38,7 @@ body {
   padding: 4px;
   gap: 4px;
   margin-bottom: 28px;
-  width: 300px;
+  width: 420px;
 }
 .seg-btn {
   flex: 1;
@@ -357,6 +357,332 @@ body {
 
 .footer-text { font-family:'Inter',-apple-system,sans-serif; font-size:10px; color:#5f6364; text-align:center; line-height:1.6; }
 .footer-text a { color:#5f6364; text-decoration:underline; }
+
+/* ─── Desktop frame ──────────────────────────────────────── */
+.desktop-outer {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+.desktop-outer.active { display: flex; }
+.desktop-browser {
+  width: 980px;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(255,255,255,0.08), 0 40px 100px rgba(0,0,0,0.75);
+}
+.desktop-chrome {
+  background: #2d2d30;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 8px;
+}
+.desktop-chrome-dot { width: 12px; height: 12px; border-radius: 50%; }
+.desktop-chrome-dot:nth-child(1) { background: #ff5f57; }
+.desktop-chrome-dot:nth-child(2) { background: #febc2e; }
+.desktop-chrome-dot:nth-child(3) { background: #28c840; }
+.desktop-url-bar {
+  flex: 1;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  height: 22px;
+  margin: 0 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter', sans-serif;
+  font-size: 11px;
+  color: rgba(255,255,255,0.35);
+}
+.desktop-page {
+  display: flex;
+  min-height: 740px;
+  max-height: 820px;
+}
+.desktop-left {
+  width: 490px;
+  flex-shrink: 0;
+  background: #f7f8f9;
+  display: flex;
+  flex-direction: column;
+  padding: 28px 40px 28px;
+  position: relative;
+  overflow-y: auto;
+}
+.desktop-return {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'Lato', sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: #3267e7;
+  cursor: pointer;
+  margin-bottom: 32px;
+}
+.desktop-order-cards {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+.desktop-price-card {
+  background: white;
+  border-radius: 8px;
+  padding: 28px 32px;
+  width: 418px;
+}
+.desktop-price-heading {
+  font-family: 'Inter', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #3267e7;
+  margin-bottom: 2px;
+}
+.desktop-price-heading span {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #5f6364;
+  margin-left: 8px;
+}
+.desktop-line-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 16px 0;
+}
+.desktop-item-icon {
+  width: 54px;
+  height: 54px;
+  border: 1px solid #d8dbde;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.desktop-item-info { flex: 1; }
+.desktop-item-name { font-family: 'Inter', sans-serif; font-size: 14px; color: #5f6364; margin-bottom: 4px; }
+.desktop-item-price { font-family: 'Inter', sans-serif; font-size: 18px; font-weight: 600; color: #181c1d; }
+.desktop-item-qty { font-family: 'Inter', sans-serif; font-size: 14px; color: #5f6364; margin-top: 8px; }
+.desktop-divider { height: 1px; background: #eceef1; margin: 4px 0; }
+.desktop-breakdown-card {
+  background: white;
+  border-radius: 8px;
+  padding: 28px 0;
+  width: 418px;
+}
+.desktop-breakdown-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 32px 16px;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #5f6364;
+}
+.desktop-breakdown-row.total { padding-top: 16px; padding-bottom: 0; color: #181c1d; font-weight: 600; }
+.desktop-breakdown-row span:last-child { font-weight: 600; }
+.desktop-left-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 24px;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: #5f6364;
+}
+.desktop-left-footer a { color: #3267e7; text-decoration: underline; cursor: pointer; }
+.desktop-right {
+  flex: 1;
+  background: white;
+  padding: 40px 40px 40px 48px;
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+.desktop-right::-webkit-scrollbar { display: none; }
+
+/* Desktop express buttons */
+.desktop-express-row { display: flex; gap: 12px; margin-bottom: 16px; }
+.desktop-express-btn {
+  flex: 1; height: 62px;
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  cursor: pointer;
+  font-family: 'Lato', sans-serif; font-size: 15px; font-weight: 500; color: #9ca3af;
+  transition: border-color 0.18s, background 0.18s;
+}
+.desktop-express-btn:hover { border-color: #d1d5db; background: #fafafa; }
+.desktop-express-btn.express-active { background: #f7f8f9; border-color: #d8dbde; border-radius: 8px; color: #5f6364; }
+.desktop-express-btn.express-deactive { opacity: 0.3; }
+.desktop-express-btn { transition: border-color 0.18s, background 0.18s, opacity 0.18s; }
+.desktop-paypal-icon { position:relative; width:22px; height:22px; flex-shrink:0; }
+.desktop-paypal-icon img { position:absolute; }
+.desktop-applepay-icon { position:relative; width:28px; height:28px; flex-shrink:0; }
+.desktop-applepay-icon img { position:absolute; }
+
+/* Desktop divider */
+.desktop-divider-row {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 16px;
+  font-family: 'Lato', sans-serif; font-size: 14px; color: #5f6364;
+}
+.desktop-divider-row::before,
+.desktop-divider-row::after {
+  content: ''; flex: 1; height: 1px; background: #d8dbde;
+}
+
+/* Desktop tile grid */
+.desktop-tile-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-bottom: 24px;
+}
+.desktop-tile {
+  height: 70px;
+  background: #fafbfc;
+  border: 1px solid #eef0f2;
+  border-radius: 10px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  font-family: 'Lato', sans-serif; font-size: 12px; font-weight: 500; color: #8b8f94;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+  overflow: hidden;
+}
+.desktop-tile:hover { background: #f0f2f4; border-color: #d8dbde; }
+.desktop-tile img { width: 20px; height: 20px; object-fit: contain; }
+.desktop-klarna-icon { position:relative; width:20px; height:20px; border-radius:3px; overflow:hidden; }
+.desktop-klarna-icon img { position:absolute; top:16.67%;right:8.33%;bottom:16.67%;left:8.33%; width:calc(100% - 16.66%);height:calc(100% - 33.34%); object-fit:fill; }
+.desktop-klarna-icon .k { position:absolute; top:29.17%;right:31.67%;bottom:30.83%;left:33.33%; font-family:'Inter',sans-serif; font-weight:700; font-size:6.667px; color:#5f6364; display:flex; align-items:center; justify-content:center; }
+
+/* Desktop selected tile */
+.desktop-selected-tile {
+  width:100%; height:70px;
+  background:#fafbfc; border:1px solid #d8dbde; border-radius:10px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:5px;
+  font-family:'Lato',sans-serif; font-size:12px; font-weight:500; color:#8b8f94;
+  margin-bottom: 0;
+}
+.desktop-selected-tile img { width:20px; height:20px; object-fit:contain; }
+
+/* Desktop form fields */
+.desktop-field {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-bottom: 16px;
+}
+.desktop-field label {
+  font-family: 'Lato', sans-serif; font-size: 15px; color: #5f6364;
+}
+.desktop-input {
+  width: 100%; height: 44px;
+  border: 1px solid #d8dbde; border-radius: 8px;
+  background: white;
+  font-family: 'Lato', sans-serif; font-size: 15px; color: #181c1d;
+  padding: 0 12px;
+  outline: none;
+}
+.desktop-input:focus { border-color: #3267e7; }
+.desktop-fields-row { display: flex; gap: 16px; margin-bottom: 16px; }
+.desktop-fields-row .desktop-field { flex: 1; margin-bottom: 0; }
+
+/* Desktop card details */
+.desktop-card-group {
+  border: 1px solid #d8dbde; border-radius: 8px; overflow: hidden;
+  margin-bottom: 16px;
+}
+.desktop-card-top {
+  display: flex; align-items: center; gap: 8px;
+  padding: 0 12px; height: 44px;
+  border-bottom: 1px solid #d8dbde;
+}
+.desktop-card-top input {
+  flex: 1; border: none; outline: none;
+  font-family: 'Lato', sans-serif; font-size: 15px; color: #a5a7a9;
+  background: transparent;
+}
+.desktop-card-bottom { display: flex; }
+.desktop-card-half {
+  flex: 1; height: 44px; display: flex; align-items: center;
+  padding: 0 12px;
+}
+.desktop-card-half:first-child { border-right: 1px solid #d8dbde; }
+.desktop-card-half input {
+  border: none; outline: none; width: 100%;
+  font-family: 'Lato', sans-serif; font-size: 15px; color: #a5a7a9; background: transparent;
+}
+.desktop-card-brands { display: flex; gap: 4px; align-items: center; }
+.desktop-card-brand { width: 28px; height: 28px; position: relative; overflow: hidden; }
+.desktop-card-brand img { position: absolute; }
+
+/* Desktop VAT/discount */
+.desktop-vat-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 0;
+  border-top: 1px solid #eceef1;
+  font-family: 'Lato', sans-serif; font-size: 15px; color: #3267e7;
+  font-weight: 500; cursor: pointer;
+}
+.desktop-vat-row svg { color: #3267e7; }
+.desktop-vat-block { border-top: 1px solid #eceef1; margin-bottom: 4px; }
+
+/* Desktop save card / checkboxes */
+.desktop-save-card {
+  background: #f7f8f9; border-radius: 8px; padding: 12px;
+  display: flex; gap: 12px; align-items: flex-start;
+  margin-bottom: 12px; cursor: pointer;
+}
+.desktop-checkbox-lg {
+  width: 20px; height: 20px; flex-shrink: 0;
+  border: 1px solid #d8dbde; border-radius: 4px; background: white;
+  transition: background 0.15s;
+}
+.desktop-checkbox-lg.checked { background: #3267e7; border-color: #3267e7; }
+.desktop-save-card-text { font-family: 'Lato', sans-serif; font-size: 15px; color: #5f6364; line-height: 1.4; }
+.desktop-aione-row {
+  display: flex; align-items: center; gap: 8px;
+  padding-left: 16px; margin-bottom: 16px; cursor: pointer;
+}
+.desktop-checkbox-sm {
+  width: 16px; height: 16px; flex-shrink: 0;
+  border: 1px solid #d8dbde; border-radius: 4px; background: white;
+  transition: background 0.15s;
+}
+.desktop-checkbox-sm.checked { background: #3267e7; border-color: #3267e7; }
+.desktop-aione-text { font-family: 'Lato', sans-serif; font-size: 15px; color: #5f6364; }
+
+/* Desktop pay button */
+.desktop-pay-btn {
+  width: 100%; height: 40px;
+  background: #3267e7; border: none; border-radius: 4px;
+  font-family: 'Lato', sans-serif; font-size: 15px; font-weight: 700; color: white;
+  cursor: pointer; margin-bottom: 12px;
+}
+.desktop-pay-btn:hover { background: #2558cc; }
+.desktop-price-breakdown {
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: 'Lato', sans-serif; font-size: 12px; color: #5f6364;
+  margin-bottom: 12px; cursor: pointer;
+}
+.desktop-footer { font-family:'Inter',sans-serif; font-size:11px; color:#5f6364; text-align:center; line-height:1.6; }
+.desktop-footer a { color:#5f6364; text-decoration:underline; }
+.desktop-fraud-note { font-family:'Inter',sans-serif; font-size:11px; color:#5f6364; margin-top: 4px; }
+
+/* Desktop pay-another-way */
+.desktop-pay-another-way-btn {
+  width:100%; height:44px;
+  background:#fff; border:1px solid #3267e7; border-radius:12px;
+  color:#3267e7;
+  font-family:'Inter',-apple-system,sans-serif; font-size:14px; font-weight:600;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:background 0.15s; margin-bottom: 0;
+}
+.desktop-pay-another-way-btn:hover { background:#f0f4ff; }
 </style>
 </head>
 <body>
@@ -366,9 +692,10 @@ body {
 <div class="seg-control">
   <button class="seg-btn active" data-flow="default" onclick="switchFlow('default')">Default flow</button>
   <button class="seg-btn" data-flow="prefill" onclick="switchFlow('prefill')">Pre-fill flow</button>
+  <button class="seg-btn" data-flow="desktop" onclick="switchFlow('desktop')">Default — desktop</button>
 </div>
 
-<div class="iphone">
+<div class="iphone" id="iphone-frame">
   <div class="btn-silent"></div>
   <div class="btn-vol-up"></div>
   <div class="btn-vol-down"></div>
@@ -669,16 +996,244 @@ body {
   </div><!-- /screen -->
 </div><!-- /iphone -->
 
-<p class="scene-caption">iPhone 15 Pro · 390 × 844 pt</p>
+<p class="scene-caption" id="caption-iphone">iPhone 15 Pro · 390 × 844 pt</p>
+
+<!-- ══════════════════════════════════════
+     DESKTOP FRAME
+     ══════════════════════════════════════ -->
+<div class="desktop-outer" id="desktop-frame">
+  <div class="desktop-browser">
+    <div class="desktop-chrome">
+      <div class="desktop-chrome-dot"></div>
+      <div class="desktop-chrome-dot"></div>
+      <div class="desktop-chrome-dot"></div>
+      <div class="desktop-url-bar">checkout.paddle.com</div>
+    </div>
+    <div class="desktop-page">
+
+      <!-- Left: Order summary -->
+      <div class="desktop-left">
+        <div class="desktop-return">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M10 3L5 8L10 13" stroke="#3267e7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Return to AI ONE
+        </div>
+        <div class="desktop-order-cards">
+          <div class="desktop-price-card">
+            <div class="desktop-price-heading">US$160.00 <span>inc. tax</span></div>
+            <div class="desktop-line-item">
+              <div class="desktop-item-icon">
+                <img src="https://www.figma.com/api/mcp/asset/d0787afb-ffb4-433d-81ac-44df4db37501" width="24" height="24" alt="">
+              </div>
+              <div class="desktop-item-info">
+                <div class="desktop-item-name">Pro-Plan Subscription</div>
+                <div class="desktop-item-price">£80.00</div>
+                <div class="desktop-item-qty">Qty: 1</div>
+              </div>
+            </div>
+            <div class="desktop-divider"></div>
+            <div class="desktop-line-item">
+              <div class="desktop-item-icon">
+                <img src="https://www.figma.com/api/mcp/asset/d0787afb-ffb4-433d-81ac-44df4db37501" width="24" height="24" alt="">
+              </div>
+              <div class="desktop-item-info">
+                <div class="desktop-item-name">Pro-Plan Subscription</div>
+                <div class="desktop-item-price">£80.00</div>
+                <div class="desktop-item-qty">Qty: 1</div>
+              </div>
+            </div>
+          </div>
+          <div class="desktop-breakdown-card">
+            <div class="desktop-breakdown-row"><span>Subtotal</span><span>$160.00</span></div>
+            <div class="desktop-breakdown-row"><span>Tax</span><span>$32.00</span></div>
+            <div class="desktop-divider" style="margin:0 32px;"></div>
+            <div class="desktop-breakdown-row total"><span>Total</span><span>$192.00</span></div>
+          </div>
+        </div>
+        <div class="desktop-left-footer">
+          <span>someone@gmail.com &nbsp;<a>Not you?</a></span>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="#5f6364"/><path d="M5 8L10 8M8 5l3 3-3 3" stroke="#5f6364" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+      </div>
+
+      <!-- Right: Checkout form -->
+      <div class="desktop-right" id="dd-scroll">
+        <div id="flow-desktop">
+
+          <!-- Express buttons -->
+          <div class="collapse-wrap" id="dd-wrap-express">
+            <div class="collapse-inner">
+              <div class="desktop-express-row">
+                <button class="desktop-express-btn" id="dd-btn-paypal" onclick="DD.selectPayPal()">
+                  <div class="desktop-paypal-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/57343a1e-e36f-43bc-9935-4a019259f877" style="top:13.75%;right:27.92%;bottom:17.52%;left:16.67%;width:calc(100% - 44.59%);height:calc(100% - 31.27%);">
+                    <img src="https://www.figma.com/api/mcp/asset/a0c17189-fc1e-4268-85d1-8778439cd802" style="top:13.75%;right:33.27%;bottom:24.91%;left:16.67%;width:calc(100% - 49.94%);height:calc(100% - 38.66%);">
+                    <img src="https://www.figma.com/api/mcp/asset/cc6b83cc-7d52-4e84-b893-50346abbc681" style="top:13.75%;right:33.27%;bottom:24.91%;left:16.67%;width:calc(100% - 49.94%);height:calc(100% - 38.66%);">
+                  </div>
+                  PayPal
+                </button>
+                <button class="desktop-express-btn" id="dd-btn-applepay" onclick="DD.selectApplePay()">
+                  <div class="desktop-applepay-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/abaf0363-1726-4ee7-8551-211053fa6e54" style="top:3.5px;left:0;width:28px;height:18px;">
+                    <img src="https://www.figma.com/api/mcp/asset/20e82682-e45a-4482-8120-03fdaea58088" style="top:4.19px;left:0.59px;width:26.8px;height:16.8px;">
+                    <img src="https://www.figma.com/api/mcp/asset/27b44b28-ca29-4486-ae5a-e22f9692158d" style="top:9.25px;left:3.78px;width:5.66px;height:7px;">
+                    <img src="https://www.figma.com/api/mcp/asset/12e672be-394e-44a1-a98c-16dcf84937da" style="top:9.83px;left:10.58px;width:13.58px;height:8.19px;">
+                  </div>
+                  Apple Pay
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Divider -->
+          <div class="collapse-wrap" id="dd-wrap-divider">
+            <div class="collapse-inner">
+              <div class="desktop-divider-row">Or pay another way</div>
+            </div>
+          </div>
+
+          <!-- Tiles -->
+          <div class="collapse-wrap" id="dd-wrap-tiles">
+            <div class="collapse-inner">
+              <div class="desktop-tile-grid">
+                <button class="desktop-tile" onclick="DD.selectTile('venmo')">
+                  <img src="https://www.figma.com/api/mcp/asset/53f0dff6-9b08-4dec-b523-8dd9b5b3e059" alt="">Venmo
+                </button>
+                <button class="desktop-tile" onclick="DD.selectTile('gpay')">
+                  <img src="https://www.figma.com/api/mcp/asset/a4c176b2-7352-4699-8ba7-0ce4cd7c86e0" alt="">Google Pay
+                </button>
+                <button class="desktop-tile" onclick="DD.selectTile('bank')">
+                  <img src="https://www.figma.com/api/mcp/asset/7345f81f-4d78-4d42-a5cd-bcb911847a69" alt="">Bank
+                </button>
+                <button class="desktop-tile" onclick="DD.selectTile('klarna')">
+                  <div class="desktop-klarna-icon">
+                    <img src="https://www.figma.com/api/mcp/asset/b24b2211-aab8-4b91-bf62-a542a17efefe" alt="">
+                    <span class="k">K.</span>
+                  </div>Klarna
+                </button>
+                <button class="desktop-tile" onclick="DD.selectTile('afterpay')">
+                  <img src="https://www.figma.com/api/mcp/asset/c84a8bac-5f04-41cc-bb37-d6e314c2cc37" alt="">Afterpay
+                </button>
+                <button class="desktop-tile" onclick="DD.selectTile('crypto')">
+                  <img src="https://www.figma.com/api/mcp/asset/f6abe4b0-9603-4d84-94b8-9efcda8384f6" alt="">Crypto
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selected tile (tile-selected state) -->
+          <div class="collapse-wrap closed" id="dd-wrap-tile-selected">
+            <div class="collapse-inner">
+              <div style="padding-bottom:16px;">
+                <div class="desktop-selected-tile" id="dd-selected-tile">
+                  <img id="dd-tile-icon" src="" alt="">
+                  <span id="dd-tile-name"></span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pay another way -->
+          <div class="collapse-wrap closed" id="dd-wrap-pay-another-way">
+            <div class="collapse-inner">
+              <div style="padding-bottom:16px;">
+                <button class="desktop-pay-another-way-btn" onclick="DD.selectDefault()">Pay another way</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Form (Email always visible, card fields collapse) -->
+          <div class="desktop-field">
+            <label>Email</label>
+            <input class="desktop-input" type="email" placeholder="" autocomplete="email">
+          </div>
+
+          <div class="collapse-wrap" id="dd-wrap-card-fields">
+            <div class="collapse-inner">
+              <div class="desktop-field">
+                <label>Cardholder name</label>
+                <input class="desktop-input" type="text" placeholder="" autocomplete="cc-name">
+              </div>
+              <div>
+                <label style="font-family:'Lato',sans-serif;font-size:15px;color:#5f6364;display:block;margin-bottom:4px;">Card details</label>
+                <div class="desktop-card-group">
+                  <div class="desktop-card-top">
+                    <input type="text" placeholder="xxxx xxxx xxxx xxxx" autocomplete="cc-number" inputmode="numeric" maxlength="19" oninput="formatCardNumber(this)">
+                    <div class="desktop-card-brands">
+                      <div class="desktop-card-brand"><img src="https://www.figma.com/api/mcp/asset/4534ff23-ff15-46e5-b5ff-bda9e274d5d7" style="left:3px;top:7px;width:11px;height:14px;"><img src="https://www.figma.com/api/mcp/asset/13278c41-5050-439b-853b-c45897162683" style="left:14px;top:7px;width:11px;height:14px;"><img src="https://www.figma.com/api/mcp/asset/5ad80a5d-cb26-4558-b933-1c26625b38cc" style="left:11.5px;top:8.7px;width:5px;height:10.6px;"></div>
+                      <div class="desktop-card-brand"><img src="https://www.figma.com/api/mcp/asset/2bbc1fb7-b858-491c-890d-adc9d16b2dce" style="left:2px;top:5px;width:24px;height:18px;"></div>
+                      <div class="desktop-card-brand"><img src="https://www.figma.com/api/mcp/asset/305cbb83-e4ba-4cd2-b50c-789e7cb3fbf2" style="top:0;left:0;width:100%;height:100%;"></div>
+                      <div class="desktop-card-brand"><img src="https://www.figma.com/api/mcp/asset/47ab7070-36ef-469b-9ad5-cb5c571b7b99" style="left:4px;top:6px;width:20px;height:16px;"></div>
+                    </div>
+                  </div>
+                  <div class="desktop-card-bottom">
+                    <div class="desktop-card-half"><input type="text" placeholder="MM / YY" autocomplete="cc-exp" inputmode="numeric" maxlength="7" oninput="formatExpiry(this)"></div>
+                    <div class="desktop-card-half"><input type="text" placeholder="CVV" autocomplete="cc-csc" inputmode="numeric" maxlength="4"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="desktop-fields-row">
+            <div class="desktop-field">
+              <label>Country</label>
+              <input class="desktop-input" type="text" value="United States" autocomplete="country-name">
+            </div>
+            <div class="desktop-field">
+              <label>Postcode</label>
+              <input class="desktop-input" type="text" placeholder="" inputmode="numeric">
+            </div>
+          </div>
+          <p class="desktop-fraud-note" style="margin-top:-8px;margin-bottom:16px;">We collect this information to prevent fraud and secure your payment.</p>
+
+          <div class="desktop-vat-block">
+            <div class="desktop-vat-row">
+              <span>Add VAT number</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3v10" stroke="#3267e7" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div class="desktop-vat-row">
+              <span>Add discount code</span>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M8 3v10" stroke="#3267e7" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+          </div>
+
+          <div class="desktop-save-card" onclick="this.querySelector('.desktop-checkbox-lg').classList.toggle('checked')">
+            <div class="desktop-checkbox-lg"></div>
+            <div class="desktop-save-card-text"><strong>Save my card details for a faster checkout</strong> with Wiser next time</div>
+          </div>
+          <div class="desktop-aione-row" onclick="this.querySelector('.desktop-checkbox-sm').classList.toggle('checked')">
+            <div class="desktop-checkbox-sm"></div>
+            <span class="desktop-aione-text">AIONE may send me updates via email</span>
+          </div>
+
+          <button class="desktop-pay-btn">Pay $1,088.00</button>
+          <div class="desktop-price-breakdown">
+            <span>Price breakdown</span>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 6L8 10L12 6" stroke="#5f6364" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <p class="desktop-footer">Sold by Paddle.com Market Limited, UK, Data shared with<br>Sellername for fulfilment. &nbsp;<a href="#">Terms</a>&nbsp;<a href="#">Privacy</a></p>
+
+        </div><!-- /flow-desktop -->
+      </div><!-- /desktop-right -->
+
+    </div><!-- /desktop-page -->
+  </div><!-- /desktop-browser -->
+  <p class="scene-caption">Desktop · 980px</p>
+</div><!-- /desktop-outer -->
 
 
 <script>
 /* ── Flow switching ──────────────────────────────────────── */
 function switchFlow(flow) {
+  const isDesktop = flow === 'desktop';
+  document.getElementById('iphone-frame').style.display = isDesktop ? 'none' : '';
+  document.getElementById('caption-iphone').style.display = isDesktop ? 'none' : '';
+  const desktopEl = document.getElementById('desktop-frame');
+  if (isDesktop) desktopEl.classList.add('active'); else desktopEl.classList.remove('active');
   document.getElementById('flow-default').classList.toggle('active', flow === 'default');
   document.getElementById('flow-prefill').classList.toggle('active', flow === 'prefill');
   document.querySelectorAll('.seg-btn').forEach(b => b.classList.toggle('active', b.dataset.flow === flow));
-  document.querySelector('.screen-scroll').scrollTop = 0;
+  if (!isDesktop) document.querySelector('.screen-scroll').scrollTop = 0;
 }
 
 /* ── State machine factory ───────────────────────────────── */
@@ -755,12 +1310,12 @@ function makeFlow(p) {
 
 /* ── Tile data ───────────────────────────────────────────── */
 const D_TILES = {
-  venmo:    { name:'Venmo',      icon:'https://www.figma.com/api/mcp/asset/62961c76-0af2-4389-81e6-f10aca544e0c' },
-  gpay:     { name:'Google Pay', icon:'https://www.figma.com/api/mcp/asset/4a60d2cd-8698-49f8-a182-5c1e8e7600bd' },
-  bank:     { name:'Bank',       icon:'https://www.figma.com/api/mcp/asset/fa07410b-0d92-49d3-a07e-f811bf9169c4' },
+  venmo:    { name:'Venmo',      icon:'https://www.figma.com/api/mcp/asset/53f0dff6-9b08-4dec-b523-8dd9b5b3e059' },
+  gpay:     { name:'Google Pay', icon:'https://www.figma.com/api/mcp/asset/a4c176b2-7352-4699-8ba7-0ce4cd7c86e0' },
+  bank:     { name:'Bank',       icon:'https://www.figma.com/api/mcp/asset/7345f81f-4d78-4d42-a5cd-bcb911847a69' },
   klarna:   { name:'Klarna',     icon:'https://www.figma.com/api/mcp/asset/b24b2211-aab8-4b91-bf62-a542a17efefe' },
-  afterpay: { name:'Afterpay',   icon:'https://www.figma.com/api/mcp/asset/274e82e7-60bd-49f0-a31a-9d0a6d0a2171' },
-  crypto:   { name:'Crypto',     icon:'https://www.figma.com/api/mcp/asset/e155a2b4-66e3-4b72-b97c-2534dfb3c530' },
+  afterpay: { name:'Afterpay',   icon:'https://www.figma.com/api/mcp/asset/c84a8bac-5f04-41cc-bb37-d6e314c2cc37' },
+  crypto:   { name:'Crypto',     icon:'https://www.figma.com/api/mcp/asset/f6abe4b0-9603-4d84-94b8-9efcda8384f6' },
 };
 
 const PF_TILES = {
@@ -775,6 +1330,7 @@ const PF_TILES = {
 /* ── Init flows ──────────────────────────────────────────── */
 const D = makeFlow('d');
 const P = makeFlow('p');
+const DD = makeFlow('dd');
 
 /* ── Shared helpers ──────────────────────────────────────── */
 function toggleCb(id) { document.getElementById(id).classList.toggle('checked'); }
